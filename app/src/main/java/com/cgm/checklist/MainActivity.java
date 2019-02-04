@@ -13,6 +13,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/** CheckList 2.0
+ * Calebe Martins 04/02/2019
+ * Iniciar o app com as pastas das listas
+ * Nova Pasta -> usar um pop-up
+ */
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 

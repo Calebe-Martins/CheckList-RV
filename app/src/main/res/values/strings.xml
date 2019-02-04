@@ -6,4 +6,6 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_add_folder">Nova Pasta</string>
+    <string name="nome_do_item">Digite o nome do item:</string>
+    <string name="todo">TODO</string>
 </resources>

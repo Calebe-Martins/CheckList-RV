@@ -8,4 +8,5 @@
     <string name="action_add_folder">Nova Pasta</string>
     <string name="nome_do_item">Digite o nome do item:</string>
     <string name="todo">TODO</string>
+    <string name="digite_o_nome_da_pasta">Digite o nome da pasta:</string>
 </resources>

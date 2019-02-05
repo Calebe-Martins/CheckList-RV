@@ -1,8 +1,13 @@
 package com.cgm.checklist;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,15 +17,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
+ * Salvar as pastas e mostrar na list view
  * Iniciar o app com as pastas das listas
- * Nova Pasta -> usar um pop-up
  */
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +40,11 @@ public class MainActivity extends AppCompatActivity
         // Botão flutuante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            // Tela que adiciona itens na lista
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this, AddItems.class);
+                startActivity(intent);
             }
         });
 
@@ -74,8 +84,38 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_new_folder) {
+
+            // Inflate do alert dialog prompt
+            LayoutInflater layoutInflater = LayoutInflater.from(context);
+            View promptsView = layoutInflater.inflate(R.layout.prompts, null);
+
+            // Pega prompts.xml como view
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+            // Seta prompts.xml como alertdialog construtor
+            alertDialogBuilder.setView(promptsView);
+
+            final EditText userInput = (EditText) promptsView.findViewById(R.id.editTextDialogPrompt);
+
+            // Pega o nome do item e salva no banco de dados ou cancela
+            alertDialogBuilder.setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //ONDE VAI SALVAR NO BANCO DE DADOS
+                }
+            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            // Cria o alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // Mostra o dialog
+            alertDialog.show();
         }
 
         return super.onOptionsItemSelected(item);

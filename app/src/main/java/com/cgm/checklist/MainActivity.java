@@ -3,6 +3,7 @@ package com.cgm.checklist;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,17 +18,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.DBHelper;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
- * Salvar as pastas e mostrar na list view -> Falta testar
- * Iniciar o app com as pastas das listas
- * Mostrar as pastas na listview
- * Mandar nome da pasta criada (linha 112) para DBHelper e criar coluna com nome da pasta
+ * Quando clicar na pasta, limpar a listView
+ * Criar a pasta com tipo pasta tbm ou só a pasta
+ * Quando adicionar item na pasta, recebe o nome do item e o nome da pasta (TYPE_FOLDER)
  */
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Declaração das variaveis e construtores
     final Context context = this;
     DBHelper dbHelper;
+    ListView listView;
+    ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +52,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Inicialização das variaveis e construtores
         dbHelper = new DBHelper(this);
+        listView = (ListView) findViewById(R.id.lista);
+
+        // TESTE
+        LoadData();
 
         // Botão flutuante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -114,11 +125,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onClick(DialogInterface dialog, int which) {
                     // Salva as pastas no bando de dados
                     String newEntry = userInput.getText().toString();
-                    if (userInput.length() != 0) {
-                        AddData(newEntry);
-                        userInput.setText("");
+                    // Verifica se a pasta jah existe, salva se n existe, cancela se existe
+                    Cursor data = dbHelper.getData();
+                    if (data.moveToNext()) {
+                        toastMenssage("Pasta já existente.");
                     } else {
-                        toastMenssage("Digite um item: ");
+                        // Adiciona a pasta se não existir uma com msm nome
+                        if (userInput.length() != 0) {
+                            AddData(newEntry);
+                            userInput.setText("");
+                        } else {
+                            toastMenssage("Digite um item: ");
+                        }
                     }
                 }
             }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -144,8 +162,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_refresh) {
+            LoadData();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -172,6 +190,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             toastMenssage("Algo deu errado");
         }
+    }
+
+    public void LoadData() {
+        // Obter os dados e anexar a uma lista
+        Cursor data = dbHelper.getData();
+        final ArrayList<String> listData = new ArrayList<>();
+        while (data.moveToNext()) {
+            // Obtenha o valor do banco de dados na coluna -1
+            // Em seguida adiciona a lista
+            listData.add(data.getString(1));
+        }
+
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
+
+        // Criador da lista adaptada e seta a lista adaptada
+        listView.setAdapter(adapter);
     }
 
     public void toastMenssage(String message) {

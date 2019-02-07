@@ -13,12 +13,14 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Cada nome de pasta deve criar uma tabela nova para salvar os itens em cada uma delas
  * Usar o ALTER TABLE ADD COLUMN na minha tabela
  * Se o nome da pasta recebido não existir cria uma coluna nova
+ * Acrescentar a coluna do tipo da tarefa para buscar as tarefas pelo tipo
  */
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String TABLE_FOLDER = "people_table";
     private static final String COL1 = "ID";
     private static final String COL2 = "name";
+    private static final String TYPE_FOLDER = "tipo_pasta";
 
     // Construtor
     public DBHelper(Context context) {
@@ -30,7 +32,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE "
                 + TABLE_FOLDER + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL2 + " TEXT)";
+                + COL2 + " TEXT,"
+                + TYPE_FOLDER + "TEXT)"; // Coluna de identificação da pasta
+
         db.execSQL(createTable);
     }
 
@@ -44,7 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean addData(String item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL2, item);
+        contentValues.put(COL2, item); // Coloca só o nome da pasta como item
 
         long result = db.insert(TABLE_FOLDER, null, contentValues);
 

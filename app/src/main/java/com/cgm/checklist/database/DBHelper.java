@@ -10,7 +10,9 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Tabela com as pastas
  * Cada pasta leva ah uma lista diferente
  * No Banco de Dados a tabela recebe o msm nome da pasta
- *
+ * Cada nome de pasta deve criar uma tabela nova para salvar os itens em cada uma delas
+ * Usar o ALTER TABLE ADD COLUMN na minha tabela
+ * Se o nome da pasta recebido não existir cria uma coluna nova
  */
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -18,6 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String COL1 = "ID";
     private static final String COL2 = "name";
 
+    // Construtor
     public DBHelper(Context context) {
         super(context, TABLE_FOLDER, null, 1);
     }
@@ -82,4 +85,17 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "DELETE FROM " + TABLE_FOLDER + " WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + name + "'";
         db.execSQL(query);
     }
+
+    // TESTE DE ADIÇÃO DE COLUNAS NOVAS NA MINHA TABELA
+//    public static void updateTabelasBanco(SQLiteDatabase db, String table,
+//                                          String column, String typ, String valor) {
+//        try {
+//            db.execSQL("ALTER TABLE " + table + " ADD " + column + " " + typ);
+//            if (valor != ""){
+//                db.execSQL("update "+ table +" set "+ column +" = '"+ valor +"'");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

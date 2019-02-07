@@ -11,7 +11,7 @@
         android:id="@+id/textViewDialogPrompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="digite_o_nome_da_pasta"
+        android:text="@string/digite_o_nome_da_pasta"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <EditText

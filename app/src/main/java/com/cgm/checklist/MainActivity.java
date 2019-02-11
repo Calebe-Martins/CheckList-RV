@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -43,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ListView listView;
     ArrayAdapter adapter;
 
+    private String type_item;
+    private String type_folder = "";
+    private String name_folder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listView = (ListView) findViewById(R.id.lista);
 
         // TESTE
-        LoadData();
+        LoadDataFolder();
 
         // Botão flutuante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -63,8 +68,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Tela que adiciona itens na lista
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddItems.class);
-                startActivity(intent);
+                // Impede de adicionar um item sem selecionar uma pasta antes
+                if (type_folder.equals("")) {
+                    toastMenssage("Selecione uma pasta.");
+                } else {
+                    Intent intent = new Intent(MainActivity.this, AddItems.class);
+                    // Envia o nome da pasta para AddItems
+                    intent.putExtra("name_folder", type_folder);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -125,19 +137,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onClick(DialogInterface dialog, int which) {
                     // Salva as pastas no bando de dados
                     String newEntry = userInput.getText().toString();
-                    // Verifica se a pasta jah existe, salva se n existe, cancela se existe
-                    Cursor data = dbHelper.getData();
-                    if (data.moveToNext()) {
-                        toastMenssage("Pasta já existente.");
+                    if (userInput.length() != 0) {
+                        AddDataFolder(newEntry);
+                        userInput.setText("");
                     } else {
-                        // Adiciona a pasta se não existir uma com msm nome
-                        if (userInput.length() != 0) {
-                            AddData(newEntry);
-                            userInput.setText("");
-                        } else {
-                            toastMenssage("Digite um item: ");
-                        }
+                        toastMenssage("Digite um nome: ");
                     }
+
                 }
             }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                 @Override
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_refresh) {
-            LoadData();
+            LoadDataFolder();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -182,18 +188,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //Verificação de inserção do item no banco de dados
-    public void AddData(String newEntry) {
-        boolean insertData = dbHelper.addData(newEntry);
+    public void AddDataFolder(String newEntry) {
+        boolean insertData = dbHelper.addDataFolder(newEntry);
 
         if (insertData) {
-            toastMenssage("Novo item adicionado!");
+            toastMenssage("Nova Pasta adicionada!");
         } else {
             toastMenssage("Algo deu errado");
         }
     }
 
-    public void LoadData() {
-        // Obter os dados e anexar a uma lista
+    // Carrega as pastas(tipo)
+    public void LoadDataFolder() {
+        // Obtem os dados e anexar a uma lista
         Cursor data = dbHelper.getData();
         final ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
@@ -207,8 +214,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
+
+        // Click do item
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Pega o nome da pasta
+                name_folder = (String) listView.getItemAtPosition(position);
+                // Passa o nome da pasta para AddItems
+                type_folder = name_folder;
+                listView.setAdapter(null);
+//                LoadDataItems();
+                // ******Carrega a lista da pasta selecionada com o adapter
+            }
+        });
     }
 
+    // Carrega os itens da pasta selecionada
+    public void LoadDataItems() {
+        Cursor data = dbHelper.getDataItems(type_folder);
+        final ArrayList<String> listData = new ArrayList<>();
+        while (data.moveToNext()) {
+            // Obtenha o valor do banco de dados na coluna -1
+            // Em seguida adiciona a lista
+            listData.add(data.getString(1));
+        }
+
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
+
+        // Criador da lista adaptada e seta a lista adaptada
+        listView.setAdapter(adapter);
+
+
+    }
+    // Aparece uma menssagem Toast
     public void toastMenssage(String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }

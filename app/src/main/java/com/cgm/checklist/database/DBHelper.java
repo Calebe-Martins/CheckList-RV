@@ -17,40 +17,40 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String TABLE_FOLDER = "people_table";
+    private static final String TABLE_NAME = "people_table";
     private static final String COL1 = "ID";
     private static final String COL2 = "name";
-    private static final String TYPE_FOLDER = "tipo_pasta";
+    private static final String TYPE_FOLDER = "type_folder";
 
     // Construtor
     public DBHelper(Context context) {
-        super(context, TABLE_FOLDER, null, 1);
+        super(context, TABLE_NAME, null, 1);
     }
 
     // Cria a coluna do banco de dados
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE "
-                + TABLE_FOLDER + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL2 + " TEXT,"
-                + TYPE_FOLDER + "TEXT)"; // Coluna de identificação da pasta
+            + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COL2 + " TEXT,"
+            + TYPE_FOLDER + " TEXT)"; // Coluna de identificação da pasta
 
         db.execSQL(createTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOLDER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 
-    // Adiciona itens no banco de dados
-    public boolean addData(String item) {
+    // Adiciona as pastas no banco de dados
+    public boolean addDataFolder(String item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL2, item); // Coloca só o nome da pasta como item
 
-        long result = db.insert(TABLE_FOLDER, null, contentValues);
+        long result = db.insert(TABLE_NAME, null, contentValues);
 
         //se a data inserida for incorreta, retorna -1
         if (result == -1) {
@@ -60,18 +60,36 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Pega a lista selecionada
+    // Adiciona os itens dentro das pastas
+    public String  addDataItens(String item, String tipo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBHelper.COL2, item);
+        contentValues.put(DBHelper.TYPE_FOLDER, tipo);
+
+        long result = db.insert(DBHelper.TABLE_NAME, null, contentValues);
+        db.close();
+
+        //se a data inserida for incorreta, retorna -1
+        if (result == -1) {
+            return "Erro";
+        } else {
+            return "Sucesso";
+        }
+    }
+
+    // Pega a pasta selecionada
     public Cursor getData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_FOLDER;
+        String query = "SELECT * FROM " + TABLE_NAME;
         Cursor data = db.rawQuery(query, null);
         return data;
     }
 
-    // Pega os itens da lista
-    public Cursor getItemId(String name) {
-        SQLiteDatabase db= this.getWritableDatabase();
-        String query = "SELECT " + COL1 + " FROM " + TABLE_FOLDER + " WHERE " + COL2 + " = '" + name + "'";
+    // Pega os itens da pasta selecionada
+    public Cursor getDataItems(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT " + COL2 + " FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " = '" + name + "'";
         Cursor data = db.rawQuery(query, null);
         return data;
     }
@@ -79,14 +97,14 @@ public class DBHelper extends SQLiteOpenHelper {
     // Atualiza o nome dos itens selecionados
     public void updateName(String newName, int id, String oldName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "UPDATE " + TABLE_FOLDER + " SET " + COL2 + " = '" + newName + "' WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + oldName + "'";
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + " = '" + newName + "' WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + oldName + "'";
         db.execSQL(query);
     }
 
     // Deleta os itens do banco de dados
     public void deleteName(int id, String name) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_FOLDER + " WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + name + "'";
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + name + "'";
         db.execSQL(query);
     }
 

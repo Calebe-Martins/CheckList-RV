@@ -31,9 +31,9 @@ import java.util.ArrayList;
 
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
- * Quando clicar na pasta, limpar a listView
  * Criar a pasta com tipo pasta tbm ou só a pasta
- * Quando adicionar item na pasta, recebe o nome do item e o nome da pasta (TYPE_FOLDER)
+ * Quando clicar na pasta mostrar os itens da pasta selecionada
+ * Terminar a procura no banco de dados
  */
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Passa o nome da pasta para AddItems
                 type_folder = name_folder;
                 listView.setAdapter(null);
-//                LoadDataItems();
+                LoadDataItems();
                 // ******Carrega a lista da pasta selecionada com o adapter
             }
         });
@@ -232,22 +232,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Carrega os itens da pasta selecionada
     public void LoadDataItems() {
-        Cursor data = dbHelper.getDataItems(type_folder);
+//        Cursor data = dbHelper.getDataItems(type_folder);
+        Cursor data = dbHelper.teste(type_folder);
         final ArrayList<String> listData = new ArrayList<>();
-        while (data.moveToNext()) {
-            // Obtenha o valor do banco de dados na coluna -1
-            // Em seguida adiciona a lista
-            listData.add(data.getString(1));
-        }
+        Toast.makeText(context, "type_folder "+type_folder, Toast.LENGTH_SHORT).show();
+//        while (data.moveToNext()) {
+//            // Obtenha o valor do banco de dados na coluna -1
+//            // Em seguida adiciona a lista
+//            listData.add(data.getString(1));
+//        }
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
-
-
     }
+
     // Aparece uma menssagem Toast
     public void toastMenssage(String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();

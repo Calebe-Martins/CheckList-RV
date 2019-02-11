@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
 
 public class AddItems extends AppCompatActivity {
@@ -46,34 +47,22 @@ public class AddItems extends AppCompatActivity {
         // Carrega o nome da pasta da MainActivity
         Intent name_folder = getIntent();
         type_folder = name_folder.getStringExtra("name_folder");
-
     }
 
     // Salva o item na pasta seleciona na MainActivity
     public void SaveFolder(View view) {
+        BancoController crud = new BancoController(getBaseContext());
         // Salva os itens e as pastas(tipo) no bando de dados
         String newEntry = userInput.getText().toString();
+        String resultado;
+
         if (userInput.length() != 0) {
-            AddDataItem(newEntry);
+            resultado = crud.AddData(newEntry, type_folder);
+            Toast.makeText(getApplicationContext(), resultado, Toast.LENGTH_LONG).show();
             userInput.setText("");
         } else {
             toastMenssage("Digite um item: ");
         }
-    }
-
-    // Adiciona itens e a pasta(tipo) no banco de dados *******ERRO!!*******
-    public void AddDataItem(String newEntry) {
-        Toast.makeText(context, type_folder, Toast.LENGTH_SHORT).show();
-        String resultado;
-        resultado = dbHelper.addDataItens(newEntry, type_folder);
-//        boolean insertDataItem = dbHelper.addDataItens(newEntry, type_folder);
-
-//        if (insertDataItem) {
-//            toastMenssage("Novo item adicionado!");
-//        } else {
-//            toastMenssage("Algo deu errado");
-//        }
-        Toast.makeText(context, resultado, Toast.LENGTH_SHORT).show();
     }
 
     //Ação do botão voltar DA ACTIONBAR

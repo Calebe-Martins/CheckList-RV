@@ -9,18 +9,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Tabela com as pastas
  * Cada pasta leva ah uma lista diferente
- * No Banco de Dados a tabela recebe o msm nome da pasta
- * Cada nome de pasta deve criar uma tabela nova para salvar os itens em cada uma delas
+ * Buscar os itens baseado no nome da pasta
  * Usar o ALTER TABLE ADD COLUMN na minha tabela
  * Se o nome da pasta recebido não existir cria uma coluna nova
- * Acrescentar a coluna do tipo da tarefa para buscar as tarefas pelo tipo
  */
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String TABLE_NAME = "people_table";
+    public static final String TABLE_NAME = "people_table";
     private static final String COL1 = "ID";
-    private static final String COL2 = "name";
-    private static final String TYPE_FOLDER = "type_folder";
+    public static final String COL2 = "name";
+    public static final String TYPE_FOLDER = "type_folder";
 
     // Construtor
     public DBHelper(Context context) {
@@ -30,11 +28,11 @@ public class DBHelper extends SQLiteOpenHelper {
     // Cria a coluna do banco de dados
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE "
-            + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COL2 + " TEXT,"
-            + TYPE_FOLDER + " TEXT)"; // Coluna de identificação da pasta
-
+        String createTable = "CREATE TABLE " + TABLE_NAME + " ("
+                + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COL2 + " TEXT,"
+                + TYPE_FOLDER + " TEXT"
+                + ")"; // Coluna de identificação da pasta
         db.execSQL(createTable);
     }
 
@@ -60,25 +58,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Adiciona os itens dentro das pastas
-    public String  addDataItens(String item, String tipo) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DBHelper.COL2, item);
-        contentValues.put(DBHelper.TYPE_FOLDER, tipo);
-
-        long result = db.insert(DBHelper.TABLE_NAME, null, contentValues);
-        db.close();
-
-        //se a data inserida for incorreta, retorna -1
-        if (result == -1) {
-            return "Erro";
-        } else {
-            return "Sucesso";
-        }
-    }
-
-    // Pega a pasta selecionada
+    // Mostra todos os itens do banco de dados
     public Cursor getData() {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
@@ -87,11 +67,18 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Pega os itens da pasta selecionada
-    public Cursor getDataItems(String name) {
+    public Cursor getDataItems(String type) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT " + COL2 + " FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " = '" + name + "'";
+        String query = "SELECT " + COL2 + " FROM " + TABLE_NAME + " WHERE " + " = '" + type + "'";
         Cursor data = db.rawQuery(query, null);
         return data;
+    }
+
+    public Cursor teste(String tipo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String coluna2[] = {COL2};
+        Cursor cursor = db.query(DBHelper.TABLE_NAME, coluna2,DBHelper.TYPE_FOLDER + " like '%" + tipo + "%'", null,null,null,null);
+        return cursor;
     }
 
     // Atualiza o nome dos itens selecionados

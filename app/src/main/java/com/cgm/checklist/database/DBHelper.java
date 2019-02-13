@@ -8,10 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Tabela com as pastas
- * Cada pasta leva ah uma lista diferente
- * Buscar os itens baseado no nome da pasta
- * Usar o ALTER TABLE ADD COLUMN na minha tabela
- * Se o nome da pasta recebido não existir cria uma coluna nova
+ * Colocar tipo da pasta como menu para chamar só os tipos no menu
  */
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -66,19 +63,16 @@ public class DBHelper extends SQLiteOpenHelper {
         return data;
     }
 
+    // WHERE é o meu filtro, no caso usar TYPE_FOLDER se possível
+//     + " WHERE " + TYPE_FOLDER + " like '" + "casa%'"
+//     + " WHERE " + TYPE_FOLDER + " like '" + test +"%'"
+
     // Pega os itens da pasta selecionada
     public Cursor getDataItems(String type) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT " + COL2 + " FROM " + TABLE_NAME + " WHERE " + " = '" + type + "'";
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " like '" + type + "%'";
         Cursor data = db.rawQuery(query, null);
         return data;
-    }
-
-    public Cursor teste(String tipo) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String coluna2[] = {COL2};
-        Cursor cursor = db.query(DBHelper.TABLE_NAME, coluna2,DBHelper.TYPE_FOLDER + " like '%" + tipo + "%'", null,null,null,null);
-        return cursor;
     }
 
     // Atualiza o nome dos itens selecionados

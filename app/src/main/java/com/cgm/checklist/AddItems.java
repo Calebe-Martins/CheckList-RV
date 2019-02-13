@@ -57,7 +57,7 @@ public class AddItems extends AppCompatActivity {
         String resultado;
 
         if (userInput.length() != 0) {
-            resultado = crud.AddData(newEntry, type_folder);
+            resultado = crud.AddDataItems(newEntry, type_folder);
             Toast.makeText(getApplicationContext(), resultado, Toast.LENGTH_LONG).show();
             userInput.setText("");
         } else {

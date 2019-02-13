@@ -16,7 +16,7 @@ public class BancoController {
         banco = new DBHelper(context);
     }
 
-    public String AddData(String item, String tipo) {
+    public String AddDataItems(String item, String tipo) {
         ContentValues valores;
         long resultado;
 

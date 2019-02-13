@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ListView listView;
     ArrayAdapter adapter;
 
-    private String type_item;
     private String type_folder = "";
     private String name_folder;
 
@@ -168,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_refresh) {
+        if (id == R.id.nav_folder) {
             LoadDataFolder();
         } else if (id == R.id.nav_gallery) {
 
@@ -224,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Passa o nome da pasta para AddItems
                 type_folder = name_folder;
                 listView.setAdapter(null);
+                Toast.makeText(context, "type_folder: "+type_folder, Toast.LENGTH_SHORT).show();
                 LoadDataItems();
                 // ******Carrega a lista da pasta selecionada com o adapter
             }
@@ -232,15 +232,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Carrega os itens da pasta selecionada
     public void LoadDataItems() {
-//        Cursor data = dbHelper.getDataItems(type_folder);
-        Cursor data = dbHelper.teste(type_folder);
+        Toast.makeText(context, "type_folder = "+type_folder, Toast.LENGTH_SHORT).show();
+        Cursor data = dbHelper.getDataItems(type_folder);
+//        Cursor data = dbHelper.teste(type_folder);
         final ArrayList<String> listData = new ArrayList<>();
-        Toast.makeText(context, "type_folder "+type_folder, Toast.LENGTH_SHORT).show();
-//        while (data.moveToNext()) {
-//            // Obtenha o valor do banco de dados na coluna -1
-//            // Em seguida adiciona a lista
-//            listData.add(data.getString(1));
-//        }
+        while (data.moveToNext()) {
+            // Obtenha o valor do banco de dados na coluna -1
+            // Em seguida adiciona a lista
+            listData.add(data.getString(1));
+        }
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);

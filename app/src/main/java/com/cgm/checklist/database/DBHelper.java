@@ -58,7 +58,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Mostra todos os itens do banco de dados
     public Cursor getData() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME;
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + "menu%'";
         Cursor data = db.rawQuery(query, null);
         return data;
     }
@@ -70,7 +70,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Pega os itens da pasta selecionada
     public Cursor getDataItems(String type) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " like '" + type + "%'";
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + type + "%'";
         Cursor data = db.rawQuery(query, null);
         return data;
     }

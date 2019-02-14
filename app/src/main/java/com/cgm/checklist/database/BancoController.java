@@ -16,7 +16,8 @@ public class BancoController {
         banco = new DBHelper(context);
     }
 
-    public String AddDataItems(String item, String tipo) {
+    // Responsavel por adicionar os itens com: tipo = (nome da pasta) e as pastas com: tipo = menu
+    public String AddData(String item, String tipo) {
         ContentValues valores;
         long resultado;
 
@@ -31,7 +32,7 @@ public class BancoController {
         if (resultado == -1) {
             return "Erro!";
         } else {
-            return "Item adicionado em: "+tipo;
+            return "Item adicionado em: " + tipo;
         }
     }
 }

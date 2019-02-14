@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
 
 import java.lang.reflect.Array;
@@ -31,9 +32,6 @@ import java.util.ArrayList;
 
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
- * Criar a pasta com tipo pasta tbm ou só a pasta
- * Quando clicar na pasta mostrar os itens da pasta selecionada
- * Terminar a procura no banco de dados
  */
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,9 +54,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Inicialização das variaveis e construtores
         dbHelper = new DBHelper(this);
-        listView = (ListView) findViewById(R.id.lista);
+        listView = (ListView) findViewById(R.id.lista_folder);
 
-        // TESTE
+        // ********* CARREGAR ITENS DO MENU
         LoadDataFolder();
 
         // Botão flutuante
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
                 // Impede de adicionar um item sem selecionar uma pasta antes
                 if (type_folder.equals("")) {
-                    toastMenssage("Selecione uma pasta.");
+                    toastMenssage("Selecione uma pasta:");
                 } else {
                     Intent intent = new Intent(MainActivity.this, AddItems.class);
                     // Envia o nome da pasta para AddItems
@@ -79,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        // Menu lateral
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -139,8 +138,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (userInput.length() != 0) {
                         AddDataFolder(newEntry);
                         userInput.setText("");
+                        LoadDataFolder();
                     } else {
-                        toastMenssage("Digite um nome: ");
+                        toastMenssage("Digite um nome.");
                     }
 
                 }
@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_folder) {
+            // Carrega as pastas
             LoadDataFolder();
         } else if (id == R.id.nav_gallery) {
 
@@ -188,13 +189,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Verificação de inserção do item no banco de dados
     public void AddDataFolder(String newEntry) {
-        boolean insertData = dbHelper.addDataFolder(newEntry);
+        BancoController crud = new BancoController(getBaseContext());
+        String resultado;
+        String padrao = "menu";
 
-        if (insertData) {
-            toastMenssage("Nova Pasta adicionada!");
-        } else {
-            toastMenssage("Algo deu errado");
-        }
+        resultado = crud.AddData(newEntry, padrao);
+        Toast.makeText(context, resultado, Toast.LENGTH_SHORT).show();
     }
 
     // Carrega as pastas(tipo)
@@ -222,31 +222,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 name_folder = (String) listView.getItemAtPosition(position);
                 // Passa o nome da pasta para AddItems
                 type_folder = name_folder;
-                listView.setAdapter(null);
-                Toast.makeText(context, "type_folder: "+type_folder, Toast.LENGTH_SHORT).show();
-                LoadDataItems();
-                // ******Carrega a lista da pasta selecionada com o adapter
+                // Vai para a activity que mostra os itens da pasta
+                Intent intent = new Intent(MainActivity.this, ListaItems.class);
+                // Envia o nome da pasta para AddItems
+                intent.putExtra("name_folder", type_folder);
+                startActivity(intent);
             }
         });
-    }
-
-    // Carrega os itens da pasta selecionada
-    public void LoadDataItems() {
-        Toast.makeText(context, "type_folder = "+type_folder, Toast.LENGTH_SHORT).show();
-        Cursor data = dbHelper.getDataItems(type_folder);
-//        Cursor data = dbHelper.teste(type_folder);
-        final ArrayList<String> listData = new ArrayList<>();
-        while (data.moveToNext()) {
-            // Obtenha o valor do banco de dados na coluna -1
-            // Em seguida adiciona a lista
-            listData.add(data.getString(1));
-        }
-
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
-
-        // Criador da lista adaptada e seta a lista adaptada
-        listView.setAdapter(adapter);
     }
 
     // Aparece uma menssagem Toast

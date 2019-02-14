@@ -4,15 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.BancoController;
@@ -68,7 +64,9 @@ public class AddItems extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
         switch (item.getItemId()) {
             case android.R.id.home: // ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
-                startActivity(new Intent(this, ListaItems.class)); // O efeito ao ser pressionado do botão (no caso abre a activity)
+                // O efeito ao ser pressionado do botão (no caso abre a activity)
+                // Manda novamente o nome da pasta para ListItems, para reabrir os itens daquela pasta
+                startActivity(new Intent(this, ListItems.class).putExtra("name_folder", type_folder));
                 finishAffinity(); // Método para matar a activity e não deixa-lá indexada na pilhagem
                 break;
             default:break;

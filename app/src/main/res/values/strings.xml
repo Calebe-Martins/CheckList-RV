@@ -9,4 +9,8 @@
     <string name="nome_do_item">Digite o nome do item:</string>
     <string name="todo">TODO</string>
     <string name="digite_o_nome_da_pasta">Digite o nome da pasta:</string>
+    <string name="title_activity_teste">teste</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -19,8 +20,9 @@ import com.cgm.checklist.database.DBHelper;
 import java.util.ArrayList;
 
 /** Carregar os itens da pasta selecionada na tela inicial
+ * Deletar pasta com todos os itens
  */
-public class ListaItems extends AppCompatActivity {
+public class ListItems extends AppCompatActivity {
 
     // Declarando recursos
     DBHelper dbHelper;
@@ -32,7 +34,7 @@ public class ListaItems extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lista_items);
+        setContentView(R.layout.list_items);
 
         // Botão voltar NA ACTIONBAR
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Mostrar o botão
@@ -49,20 +51,20 @@ public class ListaItems extends AppCompatActivity {
 
         // Mostra os itens da pasta selecionada na tela
         LoadDataItems();
+
+        // Botão flutuante
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            // Tela que adiciona itens na lista
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ListItems.this, AddItems.class);
+                // Envia o nome da pasta para AddItems
+                intent.putExtra("name_folder", type_folder);
+                startActivity(intent);
+            }
+        });
     }
-
-
-
-    // Habilita função de voltar no botão do android
-//    @Override
-//    public void onBackPressed() {
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawer(GravityCompat.START);
-//        } else {
-//            super.onBackPressed();
-//        }
-//    }
 
     // Carrega os itens da pasta selecionada
     public void LoadDataItems() {
@@ -75,23 +77,38 @@ public class ListaItems extends AppCompatActivity {
         }
 
         listItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
+        adapter = new ArrayAdapter<String>(this, R.layout.checkable_listview, R.id.txt_item, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
     }
+
+    // DELETAR MULTIPLOS ITENS DE UMA VEZ
 
     //Ação do botão voltar DA ACTIONBAR
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) { //Botão adicional na ToolBar
         switch (item.getItemId()) {
-            case android.R.id.home: // ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
+            case android.R.id.home: {// ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
                 startActivity(new Intent(this, MainActivity.class)); // O efeito ao ser pressionado do botão (no caso abre a activity)
                 finishAffinity(); // Método para matar a activity e não deixa-lá indexada na pilhagem
                 break;
+            }
+            case R.id.action_refresh: {
+                LoadDataItems();
+                toastMenssage("Lista recarregada com sucesso!");
+                break;
+            }
             default:break;
         }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu: adiciona botão de recarregar na actionbar
+        getMenuInflater().inflate(R.menu.refresh, menu);
         return true;
     }
 

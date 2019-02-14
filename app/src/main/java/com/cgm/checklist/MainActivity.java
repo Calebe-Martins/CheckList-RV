@@ -5,10 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -27,11 +28,11 @@ import android.widget.Toast;
 import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
+ * Arrumar botão voltar q não recarrega a lista
  */
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String type_folder = "";
     private String name_folder;
+
+    public static boolean isActionMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,24 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // ********* CARREGAR ITENS DO MENU
         LoadDataFolder();
-
-        // Botão flutuante
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            // Tela que adiciona itens na lista
-            @Override
-            public void onClick(View view) {
-                // Impede de adicionar um item sem selecionar uma pasta antes
-                if (type_folder.equals("")) {
-                    toastMenssage("Selecione uma pasta:");
-                } else {
-                    Intent intent = new Intent(MainActivity.this, AddItems.class);
-                    // Envia o nome da pasta para AddItems
-                    intent.putExtra("name_folder", type_folder);
-                    startActivity(intent);
-                }
-            }
-        });
 
         // Menu lateral
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -208,13 +193,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             listData.add(data.getString(1));
         }
 
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
 
-        // Click do item
+        // Click da Pasta
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -223,13 +208,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Passa o nome da pasta para AddItems
                 type_folder = name_folder;
                 // Vai para a activity que mostra os itens da pasta
-                Intent intent = new Intent(MainActivity.this, ListaItems.class);
+                Intent intent = new Intent(MainActivity.this, ListItems.class);
                 // Envia o nome da pasta para AddItems
                 intent.putExtra("name_folder", type_folder);
                 startActivity(intent);
             }
         });
     }
+
+    // ######################           TESTE de deletar multiplos itens           ##################
+    AbsListView.MultiChoiceModeListener modeListener = new AbsListView.MultiChoiceModeListener() {
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater menuInflater = mode.getMenuInflater();
+            menuInflater.inflate(R.menu.refresh, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 
     // Aparece uma menssagem Toast
     public void toastMenssage(String message) {

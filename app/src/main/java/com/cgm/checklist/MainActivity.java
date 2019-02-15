@@ -1,5 +1,6 @@
 package com.cgm.checklist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,13 +23,16 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
@@ -46,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String type_folder = "";
     private String name_folder;
 
+    private List<String> UserSelection = new ArrayList<>();
+
     public static boolean isActionMode = false;
 
     @Override
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Inicialização das variaveis e construtores
         dbHelper = new DBHelper(this);
         listView = (ListView) findViewById(R.id.lista_folder);
+        listView.setMultiChoiceModeListener(modeListener);
 
         // ********* CARREGAR ITENS DO MENU
         LoadDataFolder();
@@ -195,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
+//        adapter = new ArrayAdapter<String>(this, R.layout.trash_can, R.id.textView_menu, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
@@ -220,13 +228,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AbsListView.MultiChoiceModeListener modeListener = new AbsListView.MultiChoiceModeListener() {
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
+            if (UserSelection.contains(listView.getItemAtPosition(position))) {
+                UserSelection.remove(listView.getItemAtPosition(position));
+            } else {
+                UserSelection.add((String) listView.getItemAtPosition(position));
+            }
+            mode.setTitle(UserSelection.size() + " items adicionados");
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater menuInflater = mode.getMenuInflater();
-            menuInflater.inflate(R.menu.refresh, menu);
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.delete_folder, menu);
             return true;
         }
 

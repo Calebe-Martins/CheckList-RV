@@ -85,6 +85,8 @@ public class ListItems extends AppCompatActivity {
 
     // DELETAR MULTIPLOS ITENS DE UMA VEZ
 
+
+
     //Ação do botão voltar DA ACTIONBAR
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override

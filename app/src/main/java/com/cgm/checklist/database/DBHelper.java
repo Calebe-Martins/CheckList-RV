@@ -89,16 +89,16 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    // TESTE DE ADIÇÃO DE COLUNAS NOVAS NA MINHA TABELA
-//    public static void updateTabelasBanco(SQLiteDatabase db, String table,
-//                                          String column, String typ, String valor) {
-//        try {
-//            db.execSQL("ALTER TABLE " + table + " ADD " + column + " " + typ);
-//            if (valor != ""){
-//                db.execSQL("update "+ table +" set "+ column +" = '"+ valor +"'");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    // Deletando multiplos itens
+    public void deleteFolder(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " AND " + TYPE_FOLDER + " LIKE '" + name + "%'";
+        db.execSQL(query);
+    }
+
+    // Deleta os itens de dentro das pastas
+    public void deleteItems(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM ";
+    }
 }

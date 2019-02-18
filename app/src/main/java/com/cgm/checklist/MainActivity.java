@@ -23,9 +23,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.BancoController;
@@ -41,18 +39,20 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    // Declaração das variaveis e construtores
+    // Declaração das variaveis e recursos
     final Context context = this;
     DBHelper dbHelper;
     ListView listView;
-    ArrayAdapter adapter;
+    ArrayAdapter adapter, adapterFolder;
+
 
     private String type_folder = "";
     private String name_folder;
 
-    private List<String> UserSelection = new ArrayList<>();
-
+    // MultiChoiceModeListener = ActionMode
+    public static List<String> UserSelection = new ArrayList<>(); // PQ COM STATIC MOSTRA NO ADAPTERITEM E SEM N MOSTRA?
     public static boolean isActionMode = false;
+    public static ActionMode actionMode = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,7 +202,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
-//        adapter = new ArrayAdapter<String>(this, R.layout.trash_can, R.id.textView_menu, listData);
+//        adapter = new ArrayAdapter<String>(this, R.layout.selection_layout, R.id.folder_name, listData);
+        adapterFolder = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
@@ -224,22 +225,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+
     // ######################           TESTE de deletar multiplos itens           ##################
     AbsListView.MultiChoiceModeListener modeListener = new AbsListView.MultiChoiceModeListener() {
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+
             if (UserSelection.contains(listView.getItemAtPosition(position))) {
                 UserSelection.remove(listView.getItemAtPosition(position));
             } else {
                 UserSelection.add((String) listView.getItemAtPosition(position));
             }
-            mode.setTitle(UserSelection.size() + " items adicionados");
+            mode.setTitle(UserSelection.size() + " items adicionados...");
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.delete_folder, menu);
+
+            // Seta a lista de pastas com checkbox em cada pasta
+            listView.setAdapter(adapterFolder);
+
             return true;
         }
 
@@ -250,12 +257,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return false;
+            // Icone da lixeira na action bar
+            switch (item.getItemId()) {
+                case R.id.action_delete: {
+                    // Deleta a pasta do banco de dados
+
+
+                    // Inflate do alert dialog prompt
+                    LayoutInflater layoutInflater = LayoutInflater.from(context);
+
+                    // Pega prompts.xml como view
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+                    // Coloca titulo no Pop Up
+                    alertDialogBuilder.setTitle("Você tem certeza?\nTodos itens serão apagados.");
+
+                    // Coloca icone de lixeira
+                    alertDialogBuilder.setIcon(R.drawable.ic_delete_popup);
+
+                    alertDialogBuilder.setCancelable(false).setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // DELETA AS PASTAS E SEUS ITENS DO BANCO DE DADOS
+// ########################## NOME DA PASTA AQUI ###########################
+                            dbHelper.deleteFolder("pi");
+
+                        }
+                    }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    // Cria o alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // Mostra o dialog
+                    alertDialog.show();
+
+
+
+
+                    mode.finish();
+                    return true;
+                }
+                default: return false;
+            }
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
+            listView.setAdapter(adapter);
+            UserSelection.clear();
         }
     };
 

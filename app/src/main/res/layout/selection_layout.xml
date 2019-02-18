@@ -8,14 +8,15 @@
         android:id="@+id/folder_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_alignParentLeft="true"
         android:layout_marginLeft="25dp"
+        android:gravity="center"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_alignParentLeft="true"/>
+        />
     
     <CheckBox
-        android:id="@+id/checkbox"
+        android:id="@+id/select_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

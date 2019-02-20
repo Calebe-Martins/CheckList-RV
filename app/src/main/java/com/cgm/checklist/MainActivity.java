@@ -50,9 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String name_folder;
 
     // MultiChoiceModeListener = ActionMode
-    public static List<String> UserSelection = new ArrayList<>(); // PQ COM STATIC MOSTRA NO ADAPTERITEM E SEM N MOSTRA?
-    public static boolean isActionMode = false;
-    public static ActionMode actionMode = null;
+    public static List<String> UserSelection = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,8 +189,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Carrega as pastas(tipo)
     public void LoadDataFolder() {
+        String padrao = "menu";
         // Obtem os dados e anexar a uma lista
-        Cursor data = dbHelper.getData();
+//        Cursor data = dbHelper.getData();
+        Cursor data = dbHelper.getData(padrao);
         final ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
             // Obtenha o valor do banco de dados na coluna -1
@@ -201,8 +201,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        // Adapter para click simples nas pastas acessando proxima tela
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
-//        adapter = new ArrayAdapter<String>(this, R.layout.selection_layout, R.id.folder_name, listData);
+        // Adapter click longo com aparição da checkbox
         adapterFolder = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
@@ -230,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AbsListView.MultiChoiceModeListener modeListener = new AbsListView.MultiChoiceModeListener() {
         @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-
             if (UserSelection.contains(listView.getItemAtPosition(position))) {
                 UserSelection.remove(listView.getItemAtPosition(position));
             } else {
@@ -255,32 +255,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return false;
         }
 
+        // Icone da lixeira na action bar
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // Icone da lixeira na action bar
             switch (item.getItemId()) {
                 case R.id.action_delete: {
-                    // Deleta a pasta do banco de dados
-
-
-                    // Inflate do alert dialog prompt
-                    LayoutInflater layoutInflater = LayoutInflater.from(context);
-
                     // Pega prompts.xml como view
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
                     // Coloca titulo no Pop Up
-                    alertDialogBuilder.setTitle("Você tem certeza?\nTodos itens serão apagados.");
+                    alertDialogBuilder.setTitle("Você tem certeza disso?");
+                    alertDialogBuilder.setMessage("Todos os itens serão apagados.");
 
-                    // Coloca icone de lixeira
+                    // Coloca icone de lixeira no Pop-Up
                     alertDialogBuilder.setIcon(R.drawable.ic_delete_popup);
 
+                    // DELETA AS PASTAS E SEUS ITENS DO BANCO DE DADOS
                     alertDialogBuilder.setCancelable(false).setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // DELETA AS PASTAS E SEUS ITENS DO BANCO DE DADOS
-// ########################## NOME DA PASTA AQUI ###########################
-                            dbHelper.deleteFolder("pi");
+                            // Deletando a(s) pasta(s) e os itens dentro dela(s)
+                            for (int i = 0; i < UserSelection.size(); i++) {
+                                dbHelper.deleteFolder(UserSelection.get(i));
+                                dbHelper.deleteItems(UserSelection.get(i));
+                            }
+
+                            // Limpa a seleção das pastas
+                            UserSelection.clear();
+                            toastMenssage("Deletado com sucesso!");
+                            // Recarrega o menu, para o usuário n ter q selecionar opção pastas novamente
+                            LoadDataFolder();
 
                         }
                     }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -296,9 +300,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Mostra o dialog
                     alertDialog.show();
 
-
-
-
                     mode.finish();
                     return true;
                 }
@@ -309,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             listView.setAdapter(adapter);
-            UserSelection.clear();
         }
     };
 

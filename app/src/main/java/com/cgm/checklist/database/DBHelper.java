@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Tabela com as pastas
- * Colocar tipo da pasta como menu para chamar só os tipos no menu
  */
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -39,26 +38,10 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Adiciona as pastas no banco de dados
-    public boolean addDataFolder(String item) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL2, item); // Coloca só o nome da pasta como item
-
-        long result = db.insert(TABLE_NAME, null, contentValues);
-
-        //se a data inserida for incorreta, retorna -1
-        if (result == -1) {
-            return  false;
-        } else {
-            return true;
-        }
-    }
-
     // Mostra todos os itens do banco de dados
-    public Cursor getData() {
+    public Cursor getData(String type) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + "menu%'";
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + type + "%'";
         Cursor data = db.rawQuery(query, null);
         return data;
     }
@@ -66,14 +49,6 @@ public class DBHelper extends SQLiteOpenHelper {
     // WHERE é o meu filtro, no caso usar TYPE_FOLDER se possível
 //     + " WHERE " + TYPE_FOLDER + " like '" + "casa%'"
 //     + " WHERE " + TYPE_FOLDER + " like '" + test +"%'"
-
-    // Pega os itens da pasta selecionada
-    public Cursor getDataItems(String type) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + type + "%'";
-        Cursor data = db.rawQuery(query, null);
-        return data;
-    }
 
     // Atualiza o nome dos itens selecionados
     public void updateName(String newName, int id, String oldName) {
@@ -89,16 +64,17 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    // Deletando multiplos itens
+    // Deleta as pastas
     public void deleteFolder(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " AND " + TYPE_FOLDER + " LIKE '" + name + "%'";
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " LIKE '" + name + "%'";
         db.execSQL(query);
     }
 
-    // Deleta os itens de dentro das pastas
+    // Deleta os itens de dentro da pasta
     public void deleteItems(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM ";
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + name + "%'";
+        db.execSQL(query);
     }
 }

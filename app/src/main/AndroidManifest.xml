@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".EditItems"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ListItems"
             android:screenOrientation="portrait" />
         <activity

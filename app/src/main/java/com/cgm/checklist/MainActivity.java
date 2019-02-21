@@ -1,6 +1,5 @@
 package com.cgm.checklist;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,6 +34,8 @@ import java.util.List;
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
  * Arrumar botão voltar q não recarrega a lista
+ * Unificar comando de deletar itens
+ * String.xml LINHA 9
  */
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -268,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     alertDialogBuilder.setMessage("Todos os itens serão apagados.");
 
                     // Coloca icone de lixeira no Pop-Up
-                    alertDialogBuilder.setIcon(R.drawable.ic_delete_popup);
+                    alertDialogBuilder.setIcon(R.drawable.ic_delete_black);
 
                     // DELETA AS PASTAS E SEUS ITENS DO BANCO DE DADOS
                     alertDialogBuilder.setCancelable(false).setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
@@ -277,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // Deletando a(s) pasta(s) e os itens dentro dela(s)
                             for (int i = 0; i < UserSelection.size(); i++) {
                                 dbHelper.deleteFolder(UserSelection.get(i));
-                                dbHelper.deleteItems(UserSelection.get(i));
+                                dbHelper.deleteTypeItems(UserSelection.get(i));
                             }
 
                             // Limpa a seleção das pastas

@@ -6,7 +6,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_add_folder">Nova Pasta</string>
+    <string name="action_on_create">Criado por Calebe Martins</string>
     <string name="nome_do_item">Digite o nome do item:</string>
+    <string name="novo_nome_do_item">Digite o novo nome do item:</string>
     <string name="todo">TODO</string>
     <string name="digite_o_nome_da_pasta">Digite o nome da pasta:</string>
     <string name="title_activity_teste">teste</string>

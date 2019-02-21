@@ -2,22 +2,17 @@ package com.cgm.checklist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
-
-import java.util.ArrayList;
 
 public class AddItems extends AppCompatActivity {
 

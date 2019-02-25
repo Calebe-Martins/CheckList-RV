@@ -166,10 +166,11 @@ public class ListItems extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //percorre e deleta os itens do banco de dados dentro da pasta específica
-                        for (int i = 0; i < UserSelection.size(); i++) {
-                            dbHelper.deleteItems(UserSelection.get(i));
-                        }
-                        toastMenssage("Itens deletados.");
+                        Toast.makeText(context, UserSelection.toString(), Toast.LENGTH_SHORT).show();
+//                        for (int i = 0; i < UserSelection.size(); i++) {
+//                            dbHelper.deleteItems(UserSelection.get(i));
+//                        }
+//                        toastMenssage("Itens deletados.");
                         UserSelection.clear();
                         LoadDataItems();
                     }

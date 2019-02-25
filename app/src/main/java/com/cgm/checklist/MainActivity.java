@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     final Context context = this;
     DBHelper dbHelper;
     ListView listView;
-    ArrayAdapter adapter, adapterFolder;
+    ArrayAdapter adapter;
 
 
     private String type_folder = "";
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // MultiChoiceModeListener = ActionMode
     public static List<String> UserSelection = new ArrayList<>();
+    boolean[] checkedItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Inicialização das variaveis e construtores
         dbHelper = new DBHelper(this);
         listView = (ListView) findViewById(R.id.lista_folder);
-        listView.setMultiChoiceModeListener(modeListener);
 
         // ********* CARREGAR ITENS DO MENU
         LoadDataFolder();
@@ -149,6 +149,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alertDialog.show();
         }
 
+        if (id == R.id.action_delete_folder) {
+            String padrao = "menu";
+            // Obtem os dados e anexar a uma lista
+            Cursor data = dbHelper.getData(padrao);
+            final ArrayList<String> listData = new ArrayList<>();
+            while (data.moveToNext()) {
+                // Obtenha o valor do banco de dados na coluna -1
+                // Em seguida adiciona a lista
+                listData.add(data.getString(1));
+            }
+
+            String mList[] = new String[listData.size()];
+
+            for (int i = 0; i < listData.size(); i++) {
+                mList[i] = listData.get(i);
+            }
+
+            // Carrega o boolean com tamanho da lista
+            checkedItems = new boolean[mList.length];
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("Deletar itens: ");
+            alertDialogBuilder.setMultiChoiceItems(mList, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+                    if (isChecked) {
+                        if (UserSelection.contains(listView.getItemAtPosition(position))) {
+                            UserSelection.remove(listView.getItemAtPosition(position));
+                        } else {
+                            UserSelection.add((String) listView.getItemAtPosition(position));
+                        }
+                    }
+                }
+            });
+
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(context, UserSelection.toString(), Toast.LENGTH_SHORT).show();
+                    UserSelection.clear();
+                    LoadDataFolder();
+                }
+            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    UserSelection.clear();
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -192,7 +246,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void LoadDataFolder() {
         String padrao = "menu";
         // Obtem os dados e anexar a uma lista
-//        Cursor data = dbHelper.getData();
         Cursor data = dbHelper.getData(padrao);
         final ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
@@ -201,11 +254,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             listData.add(data.getString(1));
         }
 
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Adapter para click simples nas pastas acessando proxima tela
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
-        // Adapter click longo com aparição da checkbox
-        adapterFolder = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
 
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
@@ -229,90 +280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     // ######################           TESTE de deletar multiplos itens           ##################
-    AbsListView.MultiChoiceModeListener modeListener = new AbsListView.MultiChoiceModeListener() {
-        @Override
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-            if (UserSelection.contains(listView.getItemAtPosition(position))) {
-                UserSelection.remove(listView.getItemAtPosition(position));
-            } else {
-                UserSelection.add((String) listView.getItemAtPosition(position));
-            }
-            mode.setTitle(UserSelection.size() + " items adicionados...");
-        }
 
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.delete_folder, menu);
-
-            // Seta a lista de pastas com checkbox em cada pasta
-            listView.setAdapter(adapterFolder);
-
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        // Icone da lixeira na action bar
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.action_delete: {
-                    // Pega prompts.xml como view
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-                    // Coloca titulo no Pop Up
-                    alertDialogBuilder.setTitle("Você tem certeza disso?");
-                    alertDialogBuilder.setMessage("Todos os itens serão apagados.");
-
-                    // Coloca icone de lixeira no Pop-Up
-                    alertDialogBuilder.setIcon(R.drawable.ic_delete_black);
-
-                    // DELETA AS PASTAS E SEUS ITENS DO BANCO DE DADOS
-                    alertDialogBuilder.setCancelable(false).setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Deletando a(s) pasta(s) e os itens dentro dela(s)
-                            for (int i = 0; i < UserSelection.size(); i++) {
-                                dbHelper.deleteFolder(UserSelection.get(i));
-                                dbHelper.deleteTypeItems(UserSelection.get(i));
-                            }
-
-                            // Limpa a seleção das pastas
-                            UserSelection.clear();
-                            toastMenssage("Deletado com sucesso!");
-                            // Recarrega o menu, para o usuário n ter q selecionar opção pastas novamente
-                            LoadDataFolder();
-
-                        }
-                    }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-                    // Cria o alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    // Mostra o dialog
-                    alertDialog.show();
-
-                    mode.finish();
-                    return true;
-                }
-                default: return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            listView.setAdapter(adapter);
-        }
-    };
 
     // Aparece uma menssagem Toast
     public void toastMenssage(String message) {

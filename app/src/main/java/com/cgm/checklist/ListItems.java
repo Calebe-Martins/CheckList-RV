@@ -30,13 +30,12 @@ public class ListItems extends AppCompatActivity {
 
     // Declarando recursos
     DBHelper dbHelper;
-    ArrayAdapter adapter, adapterFolder;
+    ArrayAdapter adapter;
     final Context context = this;
     private ListView listItems;
 
     private String type_folder;
     private String name_item;
-    private int id_item;
 
     // Ação de deletar os itens
     public static List<String> UserSelection = new ArrayList<>();
@@ -103,8 +102,6 @@ public class ListItems extends AppCompatActivity {
         listItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Adapter para click nas checkbox
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
-        // Adapter click longo para deletar itens pela checkbox
-        adapterFolder = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
 
@@ -152,11 +149,15 @@ public class ListItems extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int position, boolean isChecked) {
                         if (isChecked) {
+                            // .contains serve para saber se a string CONTEM dentro do meu UserSelection
                             if (!UserSelection.contains(listItems.getItemAtPosition(position))) {
                                 UserSelection.add((String) listItems.getItemAtPosition(position));
-                            } else {
-                                UserSelection.remove(listItems.getItemAtPosition(position));
                             }
+                        } else {
+                            UserSelection.remove(listItems.getItemAtPosition(position));
+                        }
+                        if (UserSelection.contains(null)) {
+                            toastMenssage("Selecione um item.");
                         }
                     }
                 });
@@ -166,11 +167,10 @@ public class ListItems extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //percorre e deleta os itens do banco de dados dentro da pasta específica
-                        Toast.makeText(context, UserSelection.toString(), Toast.LENGTH_SHORT).show();
-//                        for (int i = 0; i < UserSelection.size(); i++) {
-//                            dbHelper.deleteItems(UserSelection.get(i));
-//                        }
-//                        toastMenssage("Itens deletados.");
+                        for (int i = 0; i < UserSelection.size(); i++) {
+                            dbHelper.deleteItems(UserSelection.get(i));
+                        }
+                        toastMenssage("Itens deletados.");
                         UserSelection.clear();
                         LoadDataItems();
                     }

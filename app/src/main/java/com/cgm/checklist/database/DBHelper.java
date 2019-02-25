@@ -32,9 +32,27 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        onCreate(db);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // PQ DISSO AQUI?
+    }
+
+    // Adiciona o item no banco de dados
+    public String AddData(String item, String type) {
+        ContentValues valores = new ContentValues();
+        long resultado;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        valores.put(COL2, item);
+        valores.put(TYPE_FOLDER, type);
+
+        resultado = db.insert(TABLE_NAME, null, valores);
+        db.close();
+
+        if (resultado == -1) {
+            return "Erro!";
+        } else {
+            return "Item adicionado em: " + type;
+        }
     }
 
     // Mostra todos os itens do banco de dados

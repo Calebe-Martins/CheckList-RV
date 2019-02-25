@@ -16,6 +16,8 @@ public class BancoController {
         banco = new DBHelper(context);
     }
 
+    // Usar para add itens via controler BancoController crud = new BancoController(getBaseContext());
+
     // Responsavel por adicionar os itens com: tipo = (nome da pasta) e as pastas com: tipo = menu
     public String AddData(String item, String tipo) {
         ContentValues valores;

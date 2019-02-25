@@ -35,6 +35,9 @@ import java.util.List;
  * Calebe Martins 04/02/2019
  * Arrumar botão voltar q não recarrega a lista
  * Unificar comando de deletar itens
+ * Verificar se existe pasta com mesmo nome
+ * Verificar se checkbox foi selecionada, se n, mostrar msg de selecionar item
+ *
  * String.xml LINHA 9
  */
 
@@ -127,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Salva as pastas no bando de dados
                     String newEntry = userInput.getText().toString();
                     if (userInput.length() != 0) {
+                        // Pega a entrada newEntry e verifica se jah existe;
                         AddDataFolder(newEntry);
                         userInput.setText("");
                         LoadDataFolder();
@@ -174,11 +178,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onClick(DialogInterface dialog, int position, boolean isChecked) {
                     if (isChecked) {
-                        if (UserSelection.contains(listView.getItemAtPosition(position))) {
-                            UserSelection.remove(listView.getItemAtPosition(position));
-                        } else {
+                        if (!UserSelection.contains(listView.getItemAtPosition(position))) {
                             UserSelection.add((String) listView.getItemAtPosition(position));
                         }
+                    } else {
+                        UserSelection.remove(listView.getItemAtPosition(position));
                     }
                 }
             });
@@ -187,7 +191,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alertDialogBuilder.setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(context, UserSelection.toString(), Toast.LENGTH_SHORT).show();
+                    //percorre e deleta as pastas e os itens do banco de dados
+                    for (int i = 0; i < UserSelection.size(); i++) {
+                        dbHelper.deleteFolder(UserSelection.get(i));
+                        dbHelper.deleteTypeItems(UserSelection.get(i));
+                    }
+                    toastMenssage("Itens deletados.");
                     UserSelection.clear();
                     LoadDataFolder();
                 }
@@ -234,11 +243,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Verificação de inserção do item no banco de dados
     public void AddDataFolder(String newEntry) {
-        BancoController crud = new BancoController(getBaseContext());
         String resultado;
         String padrao = "menu";
 
-        resultado = crud.AddData(newEntry, padrao);
+        resultado = dbHelper.AddData(newEntry, padrao);
         Toast.makeText(context, resultado, Toast.LENGTH_SHORT).show();
     }
 
@@ -277,10 +285,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-
-
-    // ######################           TESTE de deletar multiplos itens           ##################
-
 
     // Aparece uma menssagem Toast
     public void toastMenssage(String message) {

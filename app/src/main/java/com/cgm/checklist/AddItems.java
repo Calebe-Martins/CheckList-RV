@@ -44,13 +44,13 @@ public class AddItems extends AppCompatActivity {
 
     // Salva o item na pasta seleciona na MainActivity
     public void SaveItems(View view) {
-        BancoController crud = new BancoController(getBaseContext());
         // Salva os itens e as pastas(tipo) no bando de dados
         String newEntry = userInput.getText().toString();
         String resultado;
 
         if (userInput.length() != 0) {
-            resultado = crud.AddData(newEntry, type_folder);
+            resultado = dbHelper.AddData(newEntry, type_folder);
+//            resultado = crud.AddData(newEntry, type_folder);
             Toast.makeText(getApplicationContext(), resultado, Toast.LENGTH_LONG).show();
             userInput.setText("");
             // ##### QUANDO SALVAR TEM Q RECARREGAR OS ITENS

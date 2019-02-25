@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.ActionMode;
@@ -33,10 +34,8 @@ import java.util.List;
 
 /** CheckList 2.0
  * Calebe Martins 04/02/2019
- * Arrumar botão voltar q não recarrega a lista
+ * Colocar item com adpter imageButton contendo um lapis para editar
  * Unificar comando de deletar itens
- * Verificar se existe pasta com mesmo nome
- * Verificar se checkbox foi selecionada, se n, mostrar msg de selecionar item
  *
  * String.xml LINHA 9
  */
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String type_folder = "";
     private String name_folder;
 
-    // MultiChoiceModeListener = ActionMode
+    //
     public static List<String> UserSelection = new ArrayList<>();
     boolean[] checkedItems;
 
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         userInput.setText("");
                         LoadDataFolder();
                     } else {
-                        toastMenssage("Digite um nome.");
+                        toastMenssage("Digite um nome");
                     }
 
                 }
@@ -191,14 +190,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             alertDialogBuilder.setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    //percorre e deleta as pastas e os itens do banco de dados
-                    for (int i = 0; i < UserSelection.size(); i++) {
-                        dbHelper.deleteFolder(UserSelection.get(i));
-                        dbHelper.deleteTypeItems(UserSelection.get(i));
+                    // Verifica se foi selecionado alguma checkbox
+                    if (UserSelection.size() == 0) {
+                        toastMenssage("Selecione uma pasta");
+                    } else {
+                        //percorre e deleta as pastas e os itens do banco de dados
+                        for (int i = 0; i < UserSelection.size(); i++) {
+                            dbHelper.deleteAll(UserSelection.get(i));
+                        }
+                        toastMenssage("Itens deletados");
+                        UserSelection.clear();
+                        LoadDataFolder();
                     }
-                    toastMenssage("Itens deletados.");
-                    UserSelection.clear();
-                    LoadDataFolder();
                 }
             }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                 @Override

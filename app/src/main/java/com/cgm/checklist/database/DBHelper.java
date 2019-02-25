@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
+
+import com.cgm.checklist.MainActivity;
 
 /** Comando do banco de dados sql
  */
@@ -25,7 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " ("
                 + COL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL2 + " TEXT,"
+                + COL2 + " TEXT UNIQUE,"
                 + TYPE_FOLDER + " TEXT"
                 + ")"; // Coluna de identificação da pasta
         db.execSQL(createTable);
@@ -49,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
 
         if (resultado == -1) {
-            return "Erro!";
+            return "Nome já existe";
         } else {
             return "Item adicionado em: " + type;
         }
@@ -58,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
     // Mostra todos os itens do banco de dados
     public Cursor getData(String type) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + type + "%'";
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " = '" + type + "'";
         Cursor data = db.rawQuery(query, null);
         return data;
     }
@@ -67,13 +70,6 @@ public class DBHelper extends SQLiteOpenHelper {
 //     + " WHERE " + TYPE_FOLDER + " like '" + "casa%'"
 //     + " WHERE " + TYPE_FOLDER + " like '" + test +"%'"
 
-    // Atualiza o nome dos itens selecionados
-    public void updateName(String newName, int id, String oldName) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + " = '" + newName + "' WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + oldName + "'";
-        db.execSQL(query);
-    }
-
     // Atualiza o nome do item dentro da pasta
     public void updateItem(String newName, int id, String oldName) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -81,32 +77,19 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    // Deleta os itens do banco de dados
-    public void deleteName(int id, String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1 + " = '" + id + "'" + " AND " + COL2 + " = '" + name + "'";
-        db.execSQL(query);
-    }
-
-    // Deleta as pastas
-    public void deleteFolder(String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " LIKE '" + name + "%'";
-        db.execSQL(query);
-    }
-
-    // Deleta os itens de dentro da pasta
-    public void deleteTypeItems(String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " LIKE '" + name + "%'";
-        db.execSQL(query);
-    }
-
     // Deletar os itens JAH dentro da pasta
     public void deleteItems(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " LIKE '" + name + "%'";
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " = '" + name + "'";
         db.execSQL(query);
     }
 
+    // Deleta a(s) pasta(s) seleciona(s) e os itens dentro dela(s)
+    public void deleteAll(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL2 + " = '" + name + "'";
+        db.execSQL(query);
+        String query2 = "DELETE FROM " + TABLE_NAME + " WHERE " + TYPE_FOLDER + " = '" + name + "'";
+        db.execSQL(query2);
+    }
 }

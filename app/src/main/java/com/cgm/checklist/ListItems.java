@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Carregar os itens da pasta selecionada na tela inicial
- * Deletar pasta com todos os itens
  */
 public class ListItems extends AppCompatActivity {
 
@@ -35,7 +34,6 @@ public class ListItems extends AppCompatActivity {
     private ListView listItems;
 
     private String type_folder;
-    private String name_item;
 
     // Ação de deletar os itens
     public static List<String> UserSelection = new ArrayList<>();
@@ -59,9 +57,6 @@ public class ListItems extends AppCompatActivity {
         final Intent name_folder = getIntent();
         type_folder = name_folder.getStringExtra("name_folder");
 
-        // Mostra os itens da pasta selecionada na tela
-        LoadDataItems();
-
         // Botão flutuante
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -74,20 +69,14 @@ public class ListItems extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        listItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                name_item = (String) listItems.getItemAtPosition(position);
-                Intent intent = new Intent(ListItems.this, EditItems.class);
-                intent.putExtra("name_item", name_item);
-                startActivity(intent);
-                return false;
-            }
-        });
     }
 
-
+    // Carrega minha lista sempre que entrar nessa tela
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LoadDataItems();
+    }
 
     // Carrega os itens da pasta selecionada
     public void LoadDataItems() {
@@ -104,11 +93,7 @@ public class ListItems extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
-
-
     }
-
-    // DELETAR MULTIPLOS ITENS DE UMA VEZ
 
     //Ação do botão voltar DA ACTIONBAR
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -157,7 +142,7 @@ public class ListItems extends AppCompatActivity {
                             UserSelection.remove(listItems.getItemAtPosition(position));
                         }
                         if (UserSelection.contains(null)) {
-                            toastMenssage("Selecione um item.");
+                            toastMenssage("Selecione um item");
                         }
                     }
                 });
@@ -166,13 +151,18 @@ public class ListItems extends AppCompatActivity {
                 alertDialogBuilder.setPositiveButton("Deletar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //percorre e deleta os itens do banco de dados dentro da pasta específica
-                        for (int i = 0; i < UserSelection.size(); i++) {
-                            dbHelper.deleteItems(UserSelection.get(i));
+                        // Verifica se foi selecionado alguma checkbox
+                        if (UserSelection.size() == 0) {
+                            toastMenssage("Selecione um item");
+                        } else {
+                            //percorre e deleta os itens do banco de dados dentro da pasta específica
+                            for (int i = 0; i < UserSelection.size(); i++) {
+                                dbHelper.deleteItems(UserSelection.get(i));
+                            }
+                            toastMenssage("Itens deletados");
+                            UserSelection.clear();
+                            LoadDataItems();
                         }
-                        toastMenssage("Itens deletados.");
-                        UserSelection.clear();
-                        LoadDataItems();
                     }
                 }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override

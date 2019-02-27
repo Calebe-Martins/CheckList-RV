@@ -25,7 +25,7 @@ public class BancoController {
 
         db = banco.getWritableDatabase();
         valores = new ContentValues();
-        valores.put(DBHelper.COL2, item);
+        valores.put(DBHelper.NAME_ITEM, item);
         valores.put(DBHelper.TYPE_FOLDER, tipo);
 
         resultado = db.insert(DBHelper.TABLE_NAME, null, valores);

@@ -23,7 +23,8 @@ import com.cgm.checklist.database.DBHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Carregar os itens da pasta selecionada na tela inicial
+/**
+ * Pegar todos os itens com STATUS = 1 e setar eles como checados
  */
 public class ListItems extends AppCompatActivity {
 
@@ -80,19 +81,45 @@ public class ListItems extends AppCompatActivity {
 
     // Carrega os itens da pasta selecionada
     public void LoadDataItems() {
-        Cursor data = dbHelper.getData(type_folder);
+        final Cursor data = dbHelper.getData(type_folder);
         final ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
             // Obtenha o valor do banco de dados na coluna -1
             // Em seguida adiciona a lista
             listData.add(data.getString(1));
+            if (data.getString(3).equals("1")) {
+
+                String teste = String.valueOf(data.getPosition());
+
+                int quase = data.getPosition();
+
+                Toast.makeText(context, teste, Toast.LENGTH_SHORT).show();
+
+                listItems.setItemChecked(quase, true); // N funciona aqui
+            }
         }
+
 
         listItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Adapter para click nas checkbox
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
+
+        // ######## VERIFICAR SE TEM 1 NOS "STATUS" SE TIVER: MOSTRAR CHECADO
+
+        listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = (String) listItems.getItemAtPosition(position);
+
+                if (listItems.isItemChecked(position)) {
+                    dbHelper.updateStatus(1, name);
+                } else {
+                    dbHelper.updateStatus(0, name);
+                }
+            }
+        });
     }
 
     //Ação do botão voltar DA ACTIONBAR

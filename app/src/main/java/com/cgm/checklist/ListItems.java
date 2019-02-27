@@ -87,18 +87,7 @@ public class ListItems extends AppCompatActivity {
             // Obtenha o valor do banco de dados na coluna -1
             // Em seguida adiciona a lista
             listData.add(data.getString(1));
-            if (data.getString(3).equals("1")) {
-
-                String teste = String.valueOf(data.getPosition());
-
-                int quase = data.getPosition();
-
-                Toast.makeText(context, teste, Toast.LENGTH_SHORT).show();
-
-                listItems.setItemChecked(quase, true); // N funciona aqui
-            }
         }
-
 
         listItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Adapter para click nas checkbox

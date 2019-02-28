@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
+import com.cgm.checklist.database.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,8 +232,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_settings) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

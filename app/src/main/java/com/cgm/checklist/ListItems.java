@@ -38,6 +38,7 @@ public class ListItems extends AppCompatActivity {
 
     // Ação de deletar os itens
     public static List<String> UserSelection = new ArrayList<>();
+    public static final List<String> IsChecked = new ArrayList<>();
     boolean[] checkedItems;
 
     @Override
@@ -87,16 +88,10 @@ public class ListItems extends AppCompatActivity {
             // Obtenha o valor do banco de dados na coluna -1
             // Em seguida adiciona a lista
             listData.add(data.getString(1));
-            if (data.getString(3).equals("1")) {
-
-                int mostraPosição = data.getPosition();
-
-                String aux = String.valueOf(mostraPosição);
-
-                Toast.makeText(context, aux, Toast.LENGTH_SHORT).show();
-
-                listItems.setItemChecked(mostraPosição, true); // N funciona aqui n sei o pq
-
+            if (data.getString(3).equals("1")) { // Salva os itens q tem 1 nos STATUS
+                if (!IsChecked.contains(data.getPosition())) { // Adiciona a IsChecked para setar como checado
+                    IsChecked.add(String.valueOf(data.getPosition()));
+                }
             }
         }
 
@@ -106,11 +101,13 @@ public class ListItems extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
-
-        // ######## VERIFICAR SE TEM 1 NOS "STATUS" SE TIVER: MOSTRAR CHECADO
-
-
-
+        // ######################## FAZER ISSO SER UMA OPÇÃO DO MENU
+        // Verifica se tem 1 nos STATUS e manda ele checado
+        for (int i = 0; i < IsChecked.size(); i++) {
+            int aux = Integer.parseInt(IsChecked.get(i));
+            listItems.setItemChecked(aux, true);
+        }
+        IsChecked.clear(); // ACHO Q VAI TER Q REPETIR ISSO CASO N SEJA A OPÇÂO CERTA DO MENU
 
         listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -124,6 +121,7 @@ public class ListItems extends AppCompatActivity {
                 }
             }
         });
+        // ################ ATEH AQUI
     }
 
     //Ação do botão voltar DA ACTIONBAR
@@ -134,11 +132,6 @@ public class ListItems extends AppCompatActivity {
             case android.R.id.home: {// ID do seu botão (gerado automaticamente pelo android, usando como está, deve funcionar
                 startActivity(new Intent(this, MainActivity.class)); // O efeito ao ser pressionado do botão (no caso abre a activity)
                 finishAffinity(); // Método para matar a activity e não deixa-lá indexada na pilhagem
-                break;
-            }
-            case R.id.action_refresh: {
-                LoadDataItems();
-                toastMenssage("Lista recarregada com sucesso!");
                 break;
             }
             // Botão delete da action bar para excluir os itens do banco de dados

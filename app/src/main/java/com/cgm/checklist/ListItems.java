@@ -87,8 +87,20 @@ public class ListItems extends AppCompatActivity {
             // Obtenha o valor do banco de dados na coluna -1
             // Em seguida adiciona a lista
             listData.add(data.getString(1));
+            if (data.getString(3).equals("1")) {
+
+                int mostraPosição = data.getPosition();
+
+                String aux = String.valueOf(mostraPosição);
+
+                Toast.makeText(context, aux, Toast.LENGTH_SHORT).show();
+
+                listItems.setItemChecked(mostraPosição, true); // N funciona aqui n sei o pq
+
+            }
         }
 
+        // Seta a lista para poder selecionar multiplos itens
         listItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Adapter para click nas checkbox
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
@@ -96,6 +108,9 @@ public class ListItems extends AppCompatActivity {
         listItems.setAdapter(adapter);
 
         // ######## VERIFICAR SE TEM 1 NOS "STATUS" SE TIVER: MOSTRAR CHECADO
+
+
+
 
         listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

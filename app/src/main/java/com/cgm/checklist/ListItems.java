@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -42,6 +44,8 @@ public class ListItems extends AppCompatActivity {
     private ListView listItems;
 
     private String type_folder;
+
+    SwitchPreference sp;
 
     // Ação de deletar os itens
     public static List<String> UserSelection = new ArrayList<>();
@@ -109,6 +113,8 @@ public class ListItems extends AppCompatActivity {
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
 
+
+
         /**Quando a preferencia de seleção simples dos itens estiver ativa, após sair do app os
          * itens selecionados serão descelecionados altomaticamente. Caso esteja desativada, faz
          * os itens ficarem marcados mesmo que saia do app
@@ -116,6 +122,7 @@ public class ListItems extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isChecked = sharedPreferences.getBoolean("simple_selection", true);
 
+        // Quando a simples estiver selecionada
         if (!isChecked) {
             // Verifica se tem 1 nos STATUS e manda ele checado
             for (int i = 0; i < IsChecked.size(); i++) {

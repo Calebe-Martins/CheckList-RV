@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,16 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
-import com.cgm.checklist.database.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +32,7 @@ import java.util.List;
  * Calebe Martins 04/02/2019
  * Colocar item com adpter imageButton contendo um lapis para editar
  * Unificar comando de deletar itens
- *
+ * Teste de utilizar fragmente em vez de Activity para a ListItems
  * String.xml LINHA 9
  */
 
@@ -48,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DBHelper dbHelper;
     ListView listView;
     ArrayAdapter adapter;
-
 
     private String type_folder = "";
     private String name_folder;

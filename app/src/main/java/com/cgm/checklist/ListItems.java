@@ -3,13 +3,20 @@ package com.cgm.checklist;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -101,27 +108,35 @@ public class ListItems extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, listData);
         // Criador da lista adaptada e seta a lista adaptada
         listItems.setAdapter(adapter);
-        // ######################## FAZER ISSO SER UMA OPÇÃO DO MENU
-        // Verifica se tem 1 nos STATUS e manda ele checado
-        for (int i = 0; i < IsChecked.size(); i++) {
-            int aux = Integer.parseInt(IsChecked.get(i));
-            listItems.setItemChecked(aux, true);
-        }
-        IsChecked.clear(); // ACHO Q VAI TER Q REPETIR ISSO CASO N SEJA A OPÇÂO CERTA DO MENU
 
-        listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = (String) listItems.getItemAtPosition(position);
+        /**Quando a preferencia de seleção simples dos itens estiver ativa, após sair do app os
+         * itens selecionados serão descelecionados altomaticamente. Caso esteja desativada, faz
+         * os itens ficarem marcados mesmo que saia do app
+         */
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isChecked = sharedPreferences.getBoolean("simple_selection", true);
 
-                if (listItems.isItemChecked(position)) {
-                    dbHelper.updateStatus(1, name);
-                } else {
-                    dbHelper.updateStatus(0, name);
-                }
+        if (!isChecked) {
+            // Verifica se tem 1 nos STATUS e manda ele checado
+            for (int i = 0; i < IsChecked.size(); i++) {
+                int aux = Integer.parseInt(IsChecked.get(i));
+                listItems.setItemChecked(aux, true);
             }
-        });
-        // ################ ATEH AQUI
+            IsChecked.clear(); // ACHO Q VAI TER Q REPETIR ISSO CASO N SEJA A OPÇÂO CERTA DO MENU
+
+            listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String name = (String) listItems.getItemAtPosition(position);
+
+                    if (listItems.isItemChecked(position)) {
+                        dbHelper.updateStatus(1, name);
+                    } else {
+                        dbHelper.updateStatus(0, name);
+                    }
+                }
+            });
+        }
     }
 
     //Ação do botão voltar DA ACTIONBAR

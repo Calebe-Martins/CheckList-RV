@@ -30,4 +30,22 @@
         android:positiveButtonText="@null"
         android:title="@string/pref_title_add_friends_to_messages" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="simple_selection"
+        android:title="Simple item selection"
+        android:summary="@string/simple_selection" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="multiple_selection"
+        android:title="Persistence item selection"
+        android:summary="@string/multiples_selection" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="delete_selection"
+        android:title="Deleting selected items"
+        android:summary="@string/delete_selection" />
+
 </PreferenceScreen>

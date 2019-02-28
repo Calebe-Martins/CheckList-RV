@@ -1,4 +1,4 @@
-package com.cgm.checklist.database;
+package com.cgm.checklist;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

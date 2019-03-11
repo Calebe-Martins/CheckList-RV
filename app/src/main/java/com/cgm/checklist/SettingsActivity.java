@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -193,6 +194,38 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
+
+
+            final SwitchPreference simple = (SwitchPreference) findPreference("simple_selection");
+            final SwitchPreference multiple = (SwitchPreference) findPreference("persistence_selection");
+            final SwitchPreference delete = (SwitchPreference) findPreference("delete_selection");
+
+            simple.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    multiple.setChecked(false);
+                    delete.setChecked(false);
+                    return false;
+                }
+            });
+
+            multiple.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    simple.setChecked(false);
+                    delete.setChecked(false);
+                    return false;
+                }
+            });
+
+            delete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    simple.setChecked(false);
+                    multiple.setChecked(false);
+                    return false;
+                }
+            });
         }
 
         @Override

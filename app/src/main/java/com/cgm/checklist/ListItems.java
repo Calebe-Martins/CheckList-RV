@@ -119,17 +119,23 @@ public class ListItems extends AppCompatActivity {
          * itens selecionados serão descelecionados altomaticamente. Caso esteja desativada, faz
          * os itens ficarem marcados mesmo que saia do app
          */
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isChecked = sharedPreferences.getBoolean("simple_selection", true);
 
-        // Quando a simples estiver selecionada
-        if (!isChecked) {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean simpleSelection = sharedPreferences.getBoolean("simple_selection", true);
+        boolean multiSelection  = sharedPreferences.getBoolean("persistence_selection", true);
+        boolean deleteSelection = sharedPreferences.getBoolean("delete_selection", true);
+
+        if (simpleSelection) { IsChecked.clear(); }
+
+        // Quando a multiple estiver selecionada, salva os itens marcados
+        if (multiSelection) {
             // Verifica se tem 1 nos STATUS e manda ele checado
             for (int i = 0; i < IsChecked.size(); i++) {
                 int aux = Integer.parseInt(IsChecked.get(i));
                 listItems.setItemChecked(aux, true);
             }
-            IsChecked.clear(); // ACHO Q VAI TER Q REPETIR ISSO CASO N SEJA A OPÇÂO CERTA DO MENU
+            IsChecked.clear();
 
             listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -143,6 +149,21 @@ public class ListItems extends AppCompatActivity {
                     }
                 }
             });
+        }
+
+        if (deleteSelection) {
+            listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String teste = (String) listItems.getItemAtPosition(position);
+
+                    Toast.makeText(context, teste, Toast.LENGTH_SHORT).show();
+                }
+            });
+            // pegar o iten selecionado
+            // dar um tempo para deletar
+            // animação de deletar
+            // deleta o item
         }
     }
 

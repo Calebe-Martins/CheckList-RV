@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.DBHelper;
+import com.cgm.checklist.settingsApp.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Avisa qual opção de seleção de itens estah ativa
+
     }
 
     // Habilita função de voltar no botão do android

@@ -1,6 +1,5 @@
-package com.cgm.checklist;
+package com.cgm.checklist.settingsApp;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,8 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
-import android.widget.Toast;
+
+import com.cgm.checklist.R;
 
 import java.util.List;
 

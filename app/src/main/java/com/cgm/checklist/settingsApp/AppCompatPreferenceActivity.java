@@ -1,4 +1,4 @@
-package com.cgm.checklist;
+package com.cgm.checklist.settingsApp;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.cgm.checklist.database.BancoController;
 import com.cgm.checklist.database.DBHelper;
 
 public class AddItems extends AppCompatActivity {

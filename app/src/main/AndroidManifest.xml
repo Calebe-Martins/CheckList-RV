@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".settingsApp.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">

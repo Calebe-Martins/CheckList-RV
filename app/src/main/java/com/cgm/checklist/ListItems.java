@@ -34,6 +34,7 @@ import java.util.List;
 
 /**
  * Pegar todos os itens com STATUS = 1 e setar eles como checados
+ * COLOCAR ANIMAÇÂO NA HORA DE DELETAR O ITEM
  */
 public class ListItems extends AppCompatActivity {
 
@@ -44,8 +45,6 @@ public class ListItems extends AppCompatActivity {
     private ListView listItems;
 
     private String type_folder;
-
-    SwitchPreference sp;
 
     // Ação de deletar os itens
     public static List<String> UserSelection = new ArrayList<>();
@@ -70,18 +69,6 @@ public class ListItems extends AppCompatActivity {
         final Intent name_folder = getIntent();
         type_folder = name_folder.getStringExtra("name_folder");
 
-        // Botão flutuante
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            // Tela que adiciona itens na lista
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ListItems.this, AddItems.class);
-                // Envia o nome da pasta para AddItems
-                intent.putExtra("name_folder", type_folder);
-                startActivity(intent);
-            }
-        });
     }
 
     // Carrega minha lista sempre que entrar nessa tela
@@ -155,9 +142,13 @@ public class ListItems extends AppCompatActivity {
             listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String teste = (String) listItems.getItemAtPosition(position);
+                    String deletaItem = (String) listItems.getItemAtPosition(position);
+                    // Deleta o item do banco de dados
+                    dbHelper.deleteItems(deletaItem);
+                    // Deleta o item da listview
+                    listData.remove(position);
+                    listItems.setAdapter(adapter);
 
-                    Toast.makeText(context, teste, Toast.LENGTH_SHORT).show();
                 }
             });
             // pegar o iten selecionado
@@ -241,6 +232,14 @@ public class ListItems extends AppCompatActivity {
 
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
+            }
+
+            case R.id.action_add_item_actb: {
+                Intent intent = new Intent(ListItems.this, AddItems.class);
+                // Envia o nome da pasta para AddItems
+                intent.putExtra("name_folder", type_folder);
+                startActivity(intent);
+                break;
             }
             default:break;
         }

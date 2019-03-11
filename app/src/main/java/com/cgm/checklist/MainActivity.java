@@ -3,8 +3,11 @@ package com.cgm.checklist;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +79,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         // Avisa qual opção de seleção de itens estah ativa
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean simpleSelection = sharedPreferences.getBoolean("simple_selection", true);
+        boolean multiSelection  = sharedPreferences.getBoolean("persistence_selection", true);
+        boolean deleteSelection = sharedPreferences.getBoolean("delete_selection", true);
 
+        View v = findViewById(android.R.id.content);
+        if (simpleSelection) {
+            Snackbar.make(v, "Marcações simples selecionada", Snackbar.LENGTH_SHORT).setAction("ok", null).show();
+        } else if (multiSelection) {
+            Snackbar.make(v, "Marcações multiplas selecionada", Snackbar.LENGTH_SHORT).setAction("ok", null).show();
+        } else if (deleteSelection) {
+            Snackbar.make(v, "Deletar marcações selecionada", Snackbar.LENGTH_SHORT).setAction("ok", null).show();
+        }
     }
 
     // Habilita função de voltar no botão do android

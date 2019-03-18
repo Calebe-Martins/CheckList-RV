@@ -19,6 +19,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -26,6 +28,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.DBHelper;
+import com.cgm.checklist.recyclerview.RecyclerViewAct;
 import com.cgm.checklist.settingsApp.SettingsActivity;
 
 import java.util.ArrayList;
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dbHelper = new DBHelper(this);
         listView = (ListView) findViewById(R.id.lista_folder);
 
+
         // ********* CARREGAR ITENS DO MENU
         LoadDataFolder();
 
@@ -78,20 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Avisa qual opção de seleção de itens estah ativa
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean simpleSelection = sharedPreferences.getBoolean("simple_selection", true);
-        boolean multiSelection  = sharedPreferences.getBoolean("persistence_selection", true);
-        boolean deleteSelection = sharedPreferences.getBoolean("delete_selection", true);
-
-        View v = findViewById(android.R.id.content);
-        if (simpleSelection) {
-            Snackbar.make(v, "Marcações simples selecionada", Snackbar.LENGTH_SHORT).setAction("ok", null).show();
-        } else if (multiSelection) {
-            Snackbar.make(v, "Marcações multiplas selecionada", Snackbar.LENGTH_SHORT).setAction("ok", null).show();
-        } else if (deleteSelection) {
-            Snackbar.make(v, "Deletar marcações selecionada", Snackbar.LENGTH_SHORT).setAction("ok", null).show();
-        }
     }
 
     // Habilita função de voltar no botão do android
@@ -250,7 +240,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            Intent intent = new Intent(MainActivity.this, RecyclerViewAct.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

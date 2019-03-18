@@ -6,22 +6,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -76,6 +71,7 @@ public class ListItems extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         LoadDataItems();
+        adapter.notifyDataSetChanged();
     }
 
     // Carrega os itens da pasta selecionada
@@ -101,18 +97,23 @@ public class ListItems extends AppCompatActivity {
         listItems.setAdapter(adapter);
 
 
+        // ########################### alterar para aparecer um item de cada vez ####################
+        // Animação fade in da lista com todas as pastas
+        Animation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setDuration(1000);
+        listItems.startAnimation(animation);
+
 
         /**Quando a preferencia de seleção simples dos itens estiver ativa, após sair do app os
          * itens selecionados serão descelecionados altomaticamente. Caso esteja desativada, faz
          * os itens ficarem marcados mesmo que saia do app
          */
-
-
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean simpleSelection = sharedPreferences.getBoolean("simple_selection", true);
         boolean multiSelection  = sharedPreferences.getBoolean("persistence_selection", true);
         boolean deleteSelection = sharedPreferences.getBoolean("delete_selection", true);
 
+        // Desmarca itens marcados quando sair da activity
         if (simpleSelection) { IsChecked.clear(); }
 
         // Quando a multiple estiver selecionada, salva os itens marcados
@@ -138,6 +139,7 @@ public class ListItems extends AppCompatActivity {
             });
         }
 
+        // Deleta item ao ser clicado
         if (deleteSelection) {
             listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -146,15 +148,13 @@ public class ListItems extends AppCompatActivity {
                     // Deleta o item do banco de dados
                     dbHelper.deleteItems(deletaItem);
                     // Deleta o item da listview
+                    Toast.makeText(context, "Item: " + listData.get(position) + " removido com sucesso!", Toast.LENGTH_SHORT).show();
                     listData.remove(position);
-                    listItems.setAdapter(adapter);
+                    listItems.setItemChecked(position, false);
+                    adapter.notifyDataSetChanged();
 
                 }
             });
-            // pegar o iten selecionado
-            // dar um tempo para deletar
-            // animação de deletar
-            // deleta o item
         }
     }
 

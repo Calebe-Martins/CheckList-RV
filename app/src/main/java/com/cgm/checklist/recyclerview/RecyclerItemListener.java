@@ -12,6 +12,7 @@ public class RecyclerItemListener implements RecyclerView.OnItemTouchListener {
     private RecyclerTouchListener listener;
     private GestureDetector gd;
 
+    // Interface criada para meu item ser clicavel
     public interface RecyclerTouchListener {
         public void onClickListener(View view, int position);
     }
@@ -36,7 +37,7 @@ public class RecyclerItemListener implements RecyclerView.OnItemTouchListener {
 
     @Override
     public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
+        
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,22 +34,15 @@ public class RecyclerViewAct extends AppCompatActivity {
         dbHelper = new DBHelper(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mAdapter = new ItemAdapter(items, this);
+        mAdapter = new ItemAdapter(items, this, dbHelper);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 
-        populateItemsName();
+        populateItemsName(); // Mostrando meu banco de dados
         mAdapter.notifyDataSetChanged();
-
-        recyclerView.addOnItemTouchListener(new RecyclerItemListener(getApplicationContext(), recyclerView, new RecyclerItemListener.RecyclerTouchListener() {
-            @Override
-            public void onClickListener(View view, int position) {
-                Toast.makeText(RecyclerViewAct.this, "Clicked: " + items.get(position).getNome(), Toast.LENGTH_SHORT).show();
-            }
-        }));
 
     }
 

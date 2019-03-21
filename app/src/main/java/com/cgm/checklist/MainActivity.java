@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cgm.checklist.database.DBHelper;
+import com.cgm.checklist.fragment.MenuFrag;
 import com.cgm.checklist.recyclerview.RecyclerViewAct;
 import com.cgm.checklist.settingsApp.SettingsActivity;
 
@@ -229,9 +232,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_folder) {
             // Carrega as pastas
-            LoadDataFolder();
+//            LoadDataFolder();
         } else if (id == R.id.nav_gallery) {
-
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frameContainer, new MenuFrag());
+            fragmentTransaction.commit();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_settings) {

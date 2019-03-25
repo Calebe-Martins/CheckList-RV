@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.cgm.checklist.AddItems;
 import com.cgm.checklist.ListItems;
 import com.cgm.checklist.R;
 import com.cgm.checklist.adapter.Item;
@@ -140,7 +142,9 @@ public class RecyclerViewFrag extends Fragment {
                             }
 //                            toastMenssage("Itens deletados");
                             UserSelection.clear();
-                            items.notifyAll();
+                            items.clear();
+                            populateItemsName();
+                            mAdapter.notifyDataSetChanged();
                             // ######## COLOCAR O NOTIFY AQUI ####
                         }
                     }
@@ -157,6 +161,15 @@ public class RecyclerViewFrag extends Fragment {
                 alertDialog.show();
             }
 
+            case R.id.action_add_item_actb: {
+                AddItemsFrag addItemsFrag = new AddItemsFrag();
+                Bundle bundle = new Bundle();
+                bundle.putString("NOME_DA_PASTA", type_folder);
+                addItemsFrag.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.frameContainer, addItemsFrag).commit();
+                break;
+            }
             default:break;
         }
 

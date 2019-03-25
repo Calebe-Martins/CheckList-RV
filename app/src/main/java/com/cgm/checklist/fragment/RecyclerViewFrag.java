@@ -1,27 +1,31 @@
 package com.cgm.checklist.fragment;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cgm.checklist.AddItems;
-import com.cgm.checklist.ListItems;
 import com.cgm.checklist.R;
 import com.cgm.checklist.adapter.Item;
 import com.cgm.checklist.adapter.ItemAdapter;
@@ -29,6 +33,8 @@ import com.cgm.checklist.database.DBHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +46,7 @@ public class RecyclerViewFrag extends Fragment {
     private ItemAdapter mAdapter;
     private String type_folder;
     private RecyclerView recyclerView;
+    private EditText userInput;
 
     public static List<String> UserSelection = new ArrayList<>();
     public static List<Integer> ItemsRemove = new ArrayList<>();
@@ -71,6 +78,48 @@ public class RecyclerViewFrag extends Fragment {
 
         populateItemsName();
         mAdapter.notifyDataSetChanged();
+
+        userInput = (EditText) view.findViewById(R.id.editTextRecycler);
+//        userInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+//                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+//                        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        in.hideSoftInputFromWindow(userInput.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+////                        contentManager.search(StringUtils.trim(search.getText().toString()));
+//                        userInput.setText("");
+//                        toastMenssage("teste");
+//                    }
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+
+
+        userInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() || actionId == EditorInfo.IME_ACTION_DONE) {
+                    String newEntry = userInput.getText().toString();
+                    String resultado;
+                    if (userInput.length() != 0) {
+                        resultado = dbHelper.AddData(newEntry, type_folder);
+                        Toast.makeText(getContext(), resultado, Toast.LENGTH_SHORT).show();
+                        userInput.setText("");
+                        items.add(new Item(newEntry));
+                        mAdapter.notifyItemChanged(items.size() - 1);
+                        mAdapter.notifyItemInserted(items.size() - 1);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        toastMenssage("Digite um item");
+                    }
+
+                }
+                return false;
+            }
+        });
 
         setHasOptionsMenu(true);
         // Inflate the layout for this fragment
@@ -161,15 +210,6 @@ public class RecyclerViewFrag extends Fragment {
                 alertDialog.show();
             }
 
-            case R.id.action_add_item_actb: {
-                AddItemsFrag addItemsFrag = new AddItemsFrag();
-                Bundle bundle = new Bundle();
-                bundle.putString("NOME_DA_PASTA", type_folder);
-                addItemsFrag.setArguments(bundle);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.frameContainer, addItemsFrag).commit();
-                break;
-            }
             default:break;
         }
 

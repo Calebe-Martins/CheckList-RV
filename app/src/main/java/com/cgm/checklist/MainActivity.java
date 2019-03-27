@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Adapter para click simples nas pastas acessando proxima tela
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listData);
-
+        adapter.notifyDataSetChanged();
         // Criador da lista adaptada e seta a lista adaptada
         listView.setAdapter(adapter);
 

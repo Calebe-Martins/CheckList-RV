@@ -6,9 +6,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.cgm.checklist.adapter.Item;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /** Comando do banco de dados sql
  */
 public class DBHelper extends SQLiteOpenHelper {
+
+    List<Item> items = new ArrayList<>();
 
     public static final String TABLE_NAME = "table_name";
     private static final String COL1 = "ID";

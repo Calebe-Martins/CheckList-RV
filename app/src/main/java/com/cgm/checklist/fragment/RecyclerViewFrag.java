@@ -80,23 +80,6 @@ public class RecyclerViewFrag extends Fragment {
         mAdapter.notifyDataSetChanged();
 
         userInput = (EditText) view.findViewById(R.id.editTextRecycler);
-//        userInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-//                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//                        InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                        in.hideSoftInputFromWindow(userInput.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-////                        contentManager.search(StringUtils.trim(search.getText().toString()));
-//                        userInput.setText("");
-//                        toastMenssage("teste");
-//                    }
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-
 
         userInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -108,10 +91,14 @@ public class RecyclerViewFrag extends Fragment {
                         resultado = dbHelper.AddData(newEntry, type_folder);
                         Toast.makeText(getContext(), resultado, Toast.LENGTH_SHORT).show();
                         userInput.setText("");
-                        items.add(new Item(newEntry));
-                        mAdapter.notifyItemChanged(items.size() - 1);
-                        mAdapter.notifyItemInserted(items.size() - 1);
-                        mAdapter.notifyDataSetChanged();
+                        // Impede de adicionar na lista nomes q jah existem
+                        if (resultado.equals("Nome já existe")) {
+                            return true;
+                        } else {
+                            items.add(new Item(newEntry));
+                            mAdapter.notifyDataSetChanged();
+                            return true;
+                        }
                     } else {
                         toastMenssage("Digite um item");
                     }
@@ -222,6 +209,7 @@ public class RecyclerViewFrag extends Fragment {
         final ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
             items.add(new Item(data.getString(1)));
+            mAdapter.notifyDataSetChanged();
         }
 
     }

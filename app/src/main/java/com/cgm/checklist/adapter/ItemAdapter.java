@@ -22,13 +22,16 @@ import com.cgm.checklist.database.DBHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cgm.checklist.ListItems.IsChecked;
+
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHolder> {
 
     private List<Item> items;
     Context context;
-    DBHelper dbHelper; //
+    DBHelper dbHelper;
 
+    public static final List<String> IsChecked = new ArrayList<>();
     SparseBooleanArray itemStateArray= new SparseBooleanArray();
 
     public class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -60,54 +63,46 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
             boolean multiSelection  = sharedPreferences.getBoolean("persistence_selection", true);
             boolean deleteSelection = sharedPreferences.getBoolean("delete_selection", true);
 
-            if (!itemStateArray.get(adapterPosition, false)) {
-                checkedTextView.setChecked(true);
-                itemStateArray.put(adapterPosition, true);
-
-                // Desmarca itens marcados quando sair da activity
-                if (simpleSelection) {
-                    itemStateArray.clear();
+            if (simpleSelection) {
+                if (!itemStateArray.get(adapterPosition, false)) {
+                    checkedTextView.setChecked(true);
+                    itemStateArray.put(adapterPosition, true);
+                } else  {
+                    checkedTextView.setChecked(false);
+                    itemStateArray.put(adapterPosition, false);
                 }
+            }
 
-                // Quando a multiple estiver selecionada, salva os itens marcados
-                if (multiSelection) {
-                    // Manda o status do item como 1
+            if (multiSelection) {
+                if (!itemStateArray.get(adapterPosition, false)) {
+                    checkedTextView.setChecked(true);
+                    itemStateArray.put(adapterPosition, true);
                     String name = checkedTextView.getText().toString();
                     dbHelper.updateStatus(1, name);
-
-                    Toast.makeText(context, "Status 1", Toast.LENGTH_SHORT).show();
-
-                    // Carrega itens quando selecionados
-//                    if (itemStateArray.get(adapterPosition)) {
-//                        for (int i = 0; i < itemStateArray.size(); i++) {
-//                            checkedTextView.setChecked(true);
-//                        }
-//                    }
-
-
-//                    // Verifica se tem 1 nos STATUS e manda ele checado
-//                    for (int i = 0; i < IsChecked.size(); i++) {
-//                        int aux = Integer.parseInt(IsChecked.get(i));
-//                        checkedTextView.setChecked(aux, true);
-//                    }
-//                    IsChecked.clear();
-//
-//                    listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            String name = (String) listItems.getItemAtPosition(position);
-//
-//                            if (listItems.isItemChecked(position)) {
-//                                dbHelper.updateStatus(1, name);
-//                            } else {
-//                                dbHelper.updateStatus(0, name);
-//                            }
-//                        }
-//                    });
+                } else  {
+                    checkedTextView.setChecked(false);
+                    itemStateArray.put(adapterPosition, false);
+                    String name = checkedTextView.getText().toString();
+                    dbHelper.updateStatus(0, name);
                 }
+            }
 
-//                // Deleta item ao ser clicado
-//                if (deleteSelection) {
+                // Deleta item ao ser clicado
+                if (deleteSelection) {
+
+                    if (!itemStateArray.get(adapterPosition, false)) {
+                        checkedTextView.setChecked(true);
+                        itemStateArray.put(adapterPosition, true);
+                        String deletaItem = checkedTextView.getText().toString();
+                        dbHelper.deleteItems(deletaItem);
+                        items.remove(adapterPosition);
+                        notifyItemRemoved(adapterPosition);
+                        notifyItemRangeChanged(adapterPosition, items.size());
+                    } else  {
+                        checkedTextView.setChecked(false);
+                        itemStateArray.put(adapterPosition, false);
+                    }
+
 //                    listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //                        @Override
 //                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -122,7 +117,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
 //
 //                        }
 //                    });
-//                }
+                }
 //
 //
 //
@@ -137,17 +132,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
 //                checkedTextView.setChecked(false);
 //                itemStateArray.put(adapterPosition, false);
 
-            }
-            else  {
-                checkedTextView.setChecked(false);
-                if (multiSelection) {
-                    // Manda o status do item como 0
-                    String name = checkedTextView.getText().toString();
-                    dbHelper.updateStatus(0, name);
-                    Toast.makeText(context, "Status 0", Toast.LENGTH_SHORT).show();
-                }
-                itemStateArray.put(adapterPosition, false);
-            }
+//            } else  {
+//                checkedTextView.setChecked(false);
+//                if (multiSelection) {
+//                     Manda o status do item como 0
+//                    String name = checkedTextView.getText().toString();
+//                    dbHelper.updateStatus(0, name);
+//                    Toast.makeText(context, "Status 0", Toast.LENGTH_SHORT).show();
+//                }
+//                itemStateArray.put(adapterPosition, false);
+//            }
         }
     }
 
@@ -159,8 +153,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
 
     @NonNull
     @Override
-    public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+    public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_adapter, parent, false);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean multiSelection  = sharedPreferences.getBoolean("persistence_selection", true);
+        if (multiSelection) {
+            final Cursor data = dbHelper.getData("puc");
+            final ArrayList<String> listData = new ArrayList<>();
+            while (data.moveToNext()) {
+                listData.add(data.getString(1));
+                if (data.getString(3).equals("1")) {
+                    Item item = items.get(data.getPosition());
+                    item.setPosition(data.getPosition());
+                    item.setChecked(true);
+                    itemStateArray.put(item.getPosition(), true);
+                }
+            }
+        }
+
         return new CustomViewHolder(itemView);
     }
 
@@ -170,6 +180,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
         holder.bind(position);
         holder.checkedTextView.setText(item.getNome());
         //setAnimation(holder.itemView, position); // TESTE ANIMAÇÂO FADE IN MUDAR ANIMAÇÂO
+        holder.checkedTextView.setChecked(item.getChecked());
+
     }
 
     private int lastPosition = -1; // TESTE ANIMAÇÂO FADE IN MUDAR ANIMAÇÂO

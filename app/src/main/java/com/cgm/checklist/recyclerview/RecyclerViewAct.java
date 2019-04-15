@@ -43,7 +43,6 @@ public class RecyclerViewAct extends AppCompatActivity {
 
         populateItemsName(); // Mostrando meu banco de dados
         mAdapter.notifyDataSetChanged();
-
     }
 
     private void populateItemsName() {
@@ -52,6 +51,12 @@ public class RecyclerViewAct extends AppCompatActivity {
         final ArrayList<String> listData = new ArrayList<>();
         while (data.moveToNext()) {
             items.add(new Item(data.getString(1)));
+            if (data.getString(3).equals("1")) {
+//                Item item = items.get(data.getPosition());
+
+//                if (!IsChecked.contains(data.getPosition())) { // Adiciona a IsChecked para setar como checado
+//                    IsChecked.add(String.valueOf(data.getPosition()));
+                }
         }
 
     }

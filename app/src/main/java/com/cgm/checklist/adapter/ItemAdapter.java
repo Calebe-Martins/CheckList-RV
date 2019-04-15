@@ -31,7 +31,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
     Context context;
     DBHelper dbHelper;
 
-    public static final List<String> IsChecked = new ArrayList<>();
     SparseBooleanArray itemStateArray= new SparseBooleanArray();
 
     public class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -87,61 +86,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CustomViewHold
                 }
             }
 
-                // Deleta item ao ser clicado
-                if (deleteSelection) {
-
-                    if (!itemStateArray.get(adapterPosition, false)) {
-                        checkedTextView.setChecked(true);
-                        itemStateArray.put(adapterPosition, true);
-                        String deletaItem = checkedTextView.getText().toString();
-                        dbHelper.deleteItems(deletaItem);
-                        items.remove(adapterPosition);
-                        notifyItemRemoved(adapterPosition);
-                        notifyItemRangeChanged(adapterPosition, items.size());
-                    } else  {
-                        checkedTextView.setChecked(false);
-                        itemStateArray.put(adapterPosition, false);
-                    }
-
-//                    listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            String deletaItem = (String) listItems.getItemAtPosition(position);
-//                            // Deleta o item do banco de dados
-//                            dbHelper.deleteItems(deletaItem);
-//                            // Deleta o item da listview
-//                            Toast.makeText(context, "Item: " + listData.get(position) + " removido com sucesso!", Toast.LENGTH_SHORT).show();
-//                            listData.remove(position);
-//                            listItems.setItemChecked(position, false);
-//                            adapter.notifyDataSetChanged();
-//
-//                        }
-//                    });
+            // Deleta item ao ser clicado
+            if (deleteSelection) {
+                if (!itemStateArray.get(adapterPosition, false)) {
+                    checkedTextView.setChecked(true);
+                    itemStateArray.put(adapterPosition, true);
+                    String deletaItem = checkedTextView.getText().toString();
+                    dbHelper.deleteItems(deletaItem);
+                    items.remove(adapterPosition);
+                    notifyItemRemoved(adapterPosition);
+                    notifyItemRangeChanged(adapterPosition, items.size());
+                } else  {
+                    checkedTextView.setChecked(false);
+                    itemStateArray.put(adapterPosition, false);
                 }
-//
-//
-//
-//
-//
-//                Toast.makeText(context, items.get(adapterPosition).getNome(), Toast.LENGTH_SHORT).show();
-//                dbHelper.deleteItems(items.get(adapterPosition).getNome());
-//                items.remove(adapterPosition);
-//                notifyItemRemoved(adapterPosition);
-//                notifyItemRangeChanged(adapterPosition, items.size());
-//                // PEGAR O ITEM NA POSIÇÂO E DES SELECIONAR
-//                checkedTextView.setChecked(false);
-//                itemStateArray.put(adapterPosition, false);
-
-//            } else  {
-//                checkedTextView.setChecked(false);
-//                if (multiSelection) {
-//                     Manda o status do item como 0
-//                    String name = checkedTextView.getText().toString();
-//                    dbHelper.updateStatus(0, name);
-//                    Toast.makeText(context, "Status 0", Toast.LENGTH_SHORT).show();
-//                }
-//                itemStateArray.put(adapterPosition, false);
-//            }
+            }
         }
     }
 

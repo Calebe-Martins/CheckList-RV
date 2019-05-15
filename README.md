@@ -5,4 +5,4 @@ Quando salvar item dentro da "pasta", vai salvar o nome do item + a variavel com
 Quando clicar na "pasta", buscar todos os itens com TYPE_FOLDER = ao nome da "pasta".
 https://www.devmedia.com.br/utilizando-o-google-signin-em-projetos-android/34118
 
-https://www.youtube.com/watch?v=Duz_0XkWP2I -> Google signin
+https://www.youtube.com/watch?v=Duz_0XkWP2I -> Google signin + Firebase
